@@ -12,7 +12,7 @@
 <script setup>
 import { ref } from "vue";
 import { onMounted } from "vue";
-import { useEmployeeStore } from "~/stores/employeeStore";
+import { useEmsStore } from "@/stores/emsStore";
 
 useHead({
   title: "Employee Dashboard",

@@ -37,7 +37,7 @@
   
   <script setup>
   import { ref } from "vue";
-  import { useEmployeeStore } from "~/stores/employeeStore";
+  import { useEmsStore } from "@/stores/emsStore";
   
   const activeTab = ref(1);
   

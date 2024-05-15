@@ -23,7 +23,7 @@
 <script setup>
 import AddUser from "@/components/Employees/AddUser.vue";
 import useModal from "@/composables/useModal";
-import { useEmployeeStore } from '#imports';
+import { useEmsStore } from '@/stores/emsStore';
 
 const { hideModal, showModal, showClosableModal } = useModal();
 

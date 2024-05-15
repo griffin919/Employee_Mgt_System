@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
 import { useMainStore } from "./main";
 
-export const useEmployeeStore = defineStore("employeeStore", {
+export const useEmsStore = defineStore("emsStore", {
   state: () => ({
+    userProfile: {},
     uName: null,
     employees: [
       {
@@ -162,6 +163,9 @@ export const useEmployeeStore = defineStore("employeeStore", {
     },
     setSelectedEmployee(employee) {
       this.selectedEmployee = employee;
+    },
+    setUserProfile(data) {
+      this.userProfile = data;
     },
   },
 });

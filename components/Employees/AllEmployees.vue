@@ -57,12 +57,12 @@
   </template>
   
   <script setup>
-  import { useEmployeeStore } from './../../stores/employeeStore';
+  import { useEmsStore } from '../../stores/emsStore';
   import { ref, computed } from 'vue';
   import { navigateTo } from '#imports';
   
-  const employeeStore = useEmployeeStore();
-  const employees = ref(employeeStore.employees);
+  const emsStore = useEmsStore();
+  const employees = ref(emsStore.employees);
   const filteredEmployees = ref(employees.value);
   
   const filterEmployees = (e) => {
@@ -72,7 +72,7 @@
   };
   
   const navigateToEmployeeDash = (employee) => {
-    employeeStore.setSelectedEmployee(employee);
+    emsStore.setSelectedEmployee(employee);
     navigateTo('/employer/ems/employeedash');
   };
   </script>

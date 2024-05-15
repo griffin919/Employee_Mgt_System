@@ -124,9 +124,9 @@
 <script setup>
 import { ref } from 'vue';
 import useModal from "@/composables/useModal";
-import { useEmployeeStore } from '#imports';
+import { useEmsStore } from '@/stores/emsStore';
 
-const employeeStore = useEmployeeStore();
+const emsStore = useEmsStore();
 
 const { hideModal, showModal, showClosableModal } = useModal();
 

@@ -69,11 +69,11 @@
   </template>
   
   <script setup>
-  import { useEmployeeStore } from '@/stores/employeeStore';
+  import { useEmsStore } from '@/stores/emsStore';
   import { computed, ref, watch } from 'vue';
   
-  const employeeStore = useEmployeeStore();
-  const attendanceLog = employeeStore.attendanceLog;
+  const emsStore = useEmsStore();
+  const attendanceLog = emsStore.attendanceLog;
   const startDate = ref('');
   const endDate = ref('');
   let filteredAttendanceLog = ref([]);
