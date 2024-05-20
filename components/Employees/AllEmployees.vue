@@ -82,6 +82,6 @@
   
   const navigateToEmployeeDash = (employee) => {
     emsStore.setSelectedEmployee(employee);
-    navigateTo('/employer/ems/employeedash');
+    navigateTo('/admin/employeedash');
   };
   </script>

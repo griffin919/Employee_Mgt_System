@@ -2,7 +2,7 @@
   <div class="bg-white text-gray p-4 flex items-center justify-between rounded-lg">
     <div class="flex items-center">
       <button class=" hover:text-green text-gray-400 py-4  rounded"
-        @click="navigateTo('/employer/ems/dashboard')">
+        @click="navigateTo('/admin/dashboard')">
         <i class="bx bx-chevron-left text-2xl mr-4"></i>
       </button>
       <img src="/assets/images/profile-image.jpg" alt="Profile Picture" class="w-12 h-12 rounded-full mr-4">

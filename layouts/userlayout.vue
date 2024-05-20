@@ -10,25 +10,25 @@
       <ul class="nav-list">
       
         <li >
-          <nuxt-link to="/admin/dashboard" >
-            <i class="bx bx-home"></i>
-            <span class="links_name">Employees</span>
+          <nuxt-link to="/timesheets" >
+            <i class="bx bx-time-five"></i>
+            <span class="links_name">Timesheets</span>
           </nuxt-link>
-          <span class="tooltip">Employees</span>
+          <span class="tooltip">Timesheets</span>
         </li>
         <li>
-          <nuxt-link to="/admin/requests" >
-            <i class="bx bx-mail-send"></i>
+          <nuxt-link to="/requests" >
+            <i class="bx bx-envelope-open"></i>
             <span class="links_name">Requests</span>
           </nuxt-link>
           <span class="tooltip">Requests</span>
         </li>
         <li>
-          <nuxt-link to="/admin/attendance" >
-            <i class="bx bx-time-five"></i>
-            <span class="links_name">Attendance</span>
+          <nuxt-link to="/profile" >
+            <i class="bx bx-user-circle"></i>
+            <span class="links_name">Profile</span>
           </nuxt-link>
-          <span class="tooltip">Attendance</span>
+          <span class="tooltip">Profile</span>
         </li>
 
         <li class="profile">

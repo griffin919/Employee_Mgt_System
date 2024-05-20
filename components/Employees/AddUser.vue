@@ -126,7 +126,6 @@ import { ref } from 'vue';
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
 import { update } from 'firebase/database';
-import UpdateUserProfile from '~/pages/Employer/ems/updateUserProfile.vue';
 import { useEmsStore } from '@/stores/emsStore';
 import { useAuthStore } from '@/stores/authStore';
 import useAuth from '@/composables/useAuth';
