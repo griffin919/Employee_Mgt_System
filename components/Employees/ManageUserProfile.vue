@@ -169,6 +169,7 @@ const deactivateAccount = () => {
 };
 
 const updateUserInfo = () => {
+  console.log("🚀 ~ updateUserInfo")
   try {
     firestore.addCustomInfoToUserProfile(employee.value);
     // Show success message

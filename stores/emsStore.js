@@ -3,7 +3,7 @@ import { useMainStore } from "./main";
 
 export const useEmsStore = defineStore("emsStore", {
   state: () => ({
-    userProfile: {},
+    loggedInUser: {},
     uName: null,
     employees: [
       {
@@ -164,8 +164,11 @@ export const useEmsStore = defineStore("emsStore", {
     setSelectedEmployee(employee) {
       this.selectedEmployee = employee;
     },
-    setUserProfile(data) {
-      this.userProfile = data;
+    setLoggedInUser(data) {
+      this.loggedInUser = data;
     },
+    setUsers(data) {
+      this.employees = data;
+    }
   },
 });

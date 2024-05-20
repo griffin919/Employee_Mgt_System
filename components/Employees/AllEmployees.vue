@@ -58,10 +58,19 @@
   
   <script setup>
   import { useEmsStore } from '../../stores/emsStore';
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
+  import useFirebase from '@/composables/useFirebase';
   import { navigateTo } from '#imports';
   
+  const firebase  = useFirebase();
   const emsStore = useEmsStore();
+
+  onMounted(() => {
+    const users = firebase.getUsers();
+    firebase.getAllUsers().then((users) => {
+      console.log("🚀 ~ onMounted ~ users:", users)
+    });
+  });
   const employees = ref(emsStore.employees);
   const filteredEmployees = ref(employees.value);
   

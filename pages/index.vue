@@ -15,31 +15,42 @@
                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-indigo-500" />
             </div>
             <div class="mb-6">
-                <button  @click="loginUser"
+                <button @click="loginUser"
                     class="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 transition-colors duration-300">
                     Login
                 </button>
             </div>
-            <div class="flex items-center justify-center">
-                <button
-                    class=" flex items-center justify-center bg-gray-200 text-gray-600 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors duration-300">
-                    <i class='bx bx-fingerprint'></i>
-                    Login with fingerprint
-                </button>
+            <div class="flex items-center justify-between">
+                <a href="#" class="text-indigo-500 hover:text-indigo-600">Forgot Password?</a>
+                <a href="#" @click="showRequestInfoModal" class="text-indigo-500 hover:text-indigo-600">Create
+                    Account</a>
             </div>
         </div>
+
+        <div id="createAccountModal" tabindex="-1" data-modal-target="createAccountModal" aria-hidden="true"
+            class="fixed top-0 left-0  right-0 z-50 hidden w-full p-4 overflow-hidden md:inset-0 h-[calc(100%-1rem)] max-h-[95vh]">
+            <EmployeesAddUser />
+        </div>
+
     </div>
 </template>
 
 <script setup>
-  import { ref } from 'vue';
-  import useModal from "@/composables/useModal";
-  import useFirebase from "@/composables/useFirebase";
-  import { useEmsStore } from '@/stores/emsStore';
-
+import { ref } from 'vue';
+import useModal from "@/composables/useModal";
+import useFirebase from "@/composables/useFirebase";
+import { useEmsStore } from '@/stores/emsStore';
+const { hideModal, showModal, showClosableModal } = useModal();
 const emsStore = useEmsStore();
+const firestore = useFirebase();
 
-  const firestore = useFirebase();
+const showRequestInfoModal = () => {
+    showModal('createAccountModal');
+};
+
+const closeModal = () => {
+    hideModal('createAccountModal');
+};
 
 const email = ref('');
 const password = ref('');
@@ -51,5 +62,4 @@ const loginUser = async () => {
         console.error(error);
     }
 };
-
 </script>
