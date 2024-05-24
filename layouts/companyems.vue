@@ -4,31 +4,45 @@
     <div :class="['sidebar', { open: isOpen }]">
       <div class="logo-details">
         <img src="../assets/RUCST_logo.jpg" class="icon w-10 h-10 rounded-full mr-4 " alt="ciraq logo">
-        <div class="logo_name">Ciraq Hub</div>
+        <div class="logo_name">Regent Admin</div>
         <button class="bx bx-menu mr-2" id="btn" @click="toggleSidebar"></button>
       </div>
       <ul class="nav-list">
       
         <li >
-          <nuxt-link to="/admin/dashboard" >
-            <i class="bx bx-home"></i>
+          <nuxt-link to="/admin/Employees" >
+            <i class="bx bx-group"></i>
             <span class="links_name">Employees</span>
           </nuxt-link>
           <span class="tooltip">Employees</span>
+        </li>      
+        <li >
+          <nuxt-link to="/admin/timesheets" >
+            <i class="bx bx-time-five"></i>
+            <span class="links_name">Timesheets</span>
+          </nuxt-link>
+          <span class="tooltip">Timesheets</span>
         </li>
         <li>
           <nuxt-link to="/admin/requests" >
-            <i class="bx bx-mail-send"></i>
+            <i class="bx bx-envelope-open"></i>
             <span class="links_name">Requests</span>
           </nuxt-link>
           <span class="tooltip">Requests</span>
+        </li>        
+        <li>
+          <nuxt-link to="/admin/newemployee" >
+            <i class="bx bx-user-plus"></i>
+            <span class="links_name">New Employee</span>
+          </nuxt-link>
+          <span class="tooltip">New Employee</span>
         </li>
         <li>
-          <nuxt-link to="/admin/attendance" >
-            <i class="bx bx-time-five"></i>
-            <span class="links_name">Attendance</span>
+          <nuxt-link to="/admin/profile" >
+            <i class="bx bx-user-circle"></i>
+            <span class="links_name">Profile</span>
           </nuxt-link>
-          <span class="tooltip">Attendance</span>
+          <span class="tooltip">Profile</span>
         </li>
 
         <li class="profile">
@@ -44,7 +58,19 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
-      <!-- Add your main content here -->
+      <div class="flex items-center w-full bg-white p-4 mb-2 rounded-lg">
+         <div class="flex items-center">
+        <div class="mr-8">
+          <img class="w-[5rem] h-[5rem] rounded-full" src="https://i.postimg.cc/bryMmCQB/profile-image.jpg" alt="Profile Image">
+        </div>
+        <div>
+          <p class="text-xl font-bold">Ethan Rivers</p>
+          <p class="text-sm text-gray-600">Department</p>
+          <p class="text-sm text-gray-600">Employee ID</p>
+        </div>
+      </div>
+
+    </div>
       <slot />
     </section>
   </div>
@@ -62,8 +88,6 @@ const toggleSidebar = () => {
 };
 
 const signOut = () => {
-  
-
   
   let info = "Confirm signout?";
     modalStore.changeDialog(info);
@@ -115,7 +139,7 @@ const signOut = () => {
 }
 .sidebar .logo-details .logo_name {
   color: #132E35;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   opacity: 0;
   transition: all 0.5s ease;

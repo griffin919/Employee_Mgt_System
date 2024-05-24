@@ -4,7 +4,7 @@
     <div :class="['sidebar', { open: isOpen }]">
       <div class="logo-details">
         <img src="../assets/RUCST_logo.jpg" class="icon w-10 h-10 rounded-full mr-4 " alt="ciraq logo">
-        <div class="logo_name">Ciraq Hub</div>
+        <div class="logo_name">Regent Employee</div>
         <button class="bx bx-menu mr-2" id="btn" @click="toggleSidebar"></button>
       </div>
       <ul class="nav-list">
@@ -44,6 +44,18 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
+      <div class="flex items-center w-full bg-white p-4 mb-4 rounded-lg">
+         <div class="flex items-center">
+        <div class="mr-8">
+          <img class="w-[5rem] h-[5rem] rounded-full" src="https://i.postimg.cc/bryMmCQB/profile-image.jpg" alt="Profile Image">
+        </div>
+        <div>
+          <p class="text-xl font-bold">Ethan Rivers</p>
+          <p class="text-sm text-gray-600">Department</p>
+          <p class="text-sm text-gray-600">Employee ID</p>
+        </div>
+      </div>
+      </div>
       <!-- Add your main content here -->
       <slot />
     </section>
@@ -62,8 +74,6 @@ const toggleSidebar = () => {
 };
 
 const signOut = () => {
-  
-
   
   let info = "Confirm signout?";
     modalStore.changeDialog(info);
@@ -115,7 +125,7 @@ const signOut = () => {
 }
 .sidebar .logo-details .logo_name {
   color: #132E35;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   opacity: 0;
   transition: all 0.5s ease;
