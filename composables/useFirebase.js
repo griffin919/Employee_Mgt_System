@@ -1,7 +1,7 @@
 // Import the necessary Firebase modules
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, get, update } from "firebase/database";
 import { useAuthStore } from "@/stores/authStore";
+import { getDatabase, ref, set, onValue, get, update } from "firebase/database";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -226,12 +226,8 @@ export default function useFirebase() {
     const userRef = ref(db, `users/${uid}`);
     onValue(userRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("🚀 ~ onValue ~ data:", data);
       authStore.setWholeUserInfoUserData(data);
-      console.log(
-        "🚀 ~ file: useFirebase.js ~ line 162 ~ onValue ~ data",
-        data
-      );
+      
     });
   };
 
@@ -241,8 +237,6 @@ export default function useFirebase() {
       .then((idTokenResult) => {
         console.log("idTokenResult:", idTokenResult);
         authStore.setClaims(idTokenResult.claims);
-        console.log("🚀 ~ getUserClaims ~ authStore:", authStore.claims);
-        // Confirm the user is an Admin.
       })
       .catch((error) => {
         console.log(error);
@@ -274,7 +268,6 @@ export default function useFirebase() {
 
   // Update the current user's profile
   const updateCurrentUser = (data) => {
-    console.log("🚀 ~ updateCurrentUser ~ data:", data);
     const { photoURL, phoneNumber, fname, lname } = data;
 
     if (!auth.currentUser) {
@@ -288,10 +281,6 @@ export default function useFirebase() {
       phoneNumber: phoneNumber ? phoneNumber.toString() : null, // Convert phoneNumber to string or set to null
     };
 
-    console.log(
-      "🚀 ~ updateCurrentUser ~ updatedProfileData:",
-      updatedProfileData
-    );
     updateProfile(auth.currentUser, updatedProfileData)
       .then((response) => {
         console.log("🚀 ~ updateProfile ~ response:", response);
@@ -399,13 +388,7 @@ export default function useFirebase() {
   };
 
   const updateUserRole = (userid, role, value) => {
-    console.log(
-      "🚀 ~ updateUserRole ~ userid, role, value:",
-      userid,
-      role,
-      value
-    );
-
+   
     const updates = {};
     updates[`users/${userid}/claims/${role}`] = value;
 
@@ -543,6 +526,40 @@ export default function useFirebase() {
     });
   };
 
+  
+
+  const getAttendanceById = async (uid) => {
+    const attendanceRef = ref(db, "attendance/" + uid);
+    return new Promise((resolve, reject) => {
+      onValue(
+        attendanceRef,
+        (snapshot) => {
+          const sn = snapshot.val();
+          resolve(sn);
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
+  };
+
+  const getAllAttendance = async () => {
+    const attendanceRef = ref(db, "attendance/");
+    return new Promise((resolve, reject) => {
+      onValue(
+        attendanceRef,
+        (snapshot) => {
+          const sn = snapshot.val();
+          resolve(sn);
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
+  };
+
   return {
     createUserAccount,
     signInUser,
@@ -563,5 +580,7 @@ export default function useFirebase() {
     auth,
     updateRequestStatus,
     getAllRequests,
+    getAllAttendance,
+    getAttendanceById,
   };
 }

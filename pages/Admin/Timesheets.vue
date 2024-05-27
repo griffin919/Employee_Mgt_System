@@ -1,111 +1,121 @@
 <template>
-
+  <div class="bg-white relative overflow-x-auto shadow-md rounded-lg p-2">
     <div
-      class="bg-white relative overflow-x-auto shadow-md rounded-lg p-2"
+      class="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 bg-white"
     >
-      <div
-        class="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 bg-white"
-      >
-        <div class="flex py-2 items-center text-base font-semibold ml-4">
-          <p>Timesheets</p>
-          <button @click="refresh" class="flex items-baseline">
-            <i class="ml-4 text-lg bx bx-revision"></i>
-          </button>
-        </div>
-        <div class=" p-2 flex ">
-          
-          <label for="startDate" class="mr-2">Start Date:</label>
-          <input
-            id="startDate"
-            v-model="startDate"
-            type="date"
-            class="border bg-gray-200 border-gray-300 rounded px-2 py-1 mr-4"
-          />
-          <label for="endDate" class="mr-2">End Date:</label>
-          <input
-            id="endDate"
-            v-model="endDate"
-            type="date"
-            class="border bg-gray-200 border-gray-300 mr-4 rounded px-2 py-1"
-          />
-          
-          <button
-              class="bg-green-500 border py-2 border-green-500  text-white text-sm rounded-lg block px-2"
-              type="button"
-            >
-              Print Report
-            </button></div>
+      <div class="flex py-2 items-center text-base font-semibold ml-4">
+        <p>Attendance</p>
+        <button @click="getUserAttendance" class="flex items-baseline">
+          <i class="ml-4 text-lg bx bx-revision"></i>
+        </button>
       </div>
-      <div class="overflow-y-auto h-[74svh]">
-        <table class="w-full text-sm text-left text-gray-500">
-          <thead class="sticky top-0 bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3">Date</th>
-              <th scope="col" class="px-6 py-3">Employee</th>
-              <th scope="col" class="px-6 py-3">Start time</th>
-              <th scope="col" class="px-6 py-3">Finish time</th>
-              <th scope="col" class="px-6 py-3">Work time</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              class="bg-white border-b hover:bg-gray-50"
-              v-for="item in personalAttendance"
-              :key="item.id"
-            >
-              <th
-                scope="row"
-                class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap"
-              >
-                <div class="text-base font-semibold">
-                  {{ formatDate(item.date) }}
-                </div>
-              </th>
-              <td class="px-6 py-1">{{ listing.start_time }}</td>
-              <td class="px-6 py-1">{{ listing.end_time }}</td>
-              <td class="px-6 py-1">
-                <button
-             @click="showUserInfoModal"
-              class="bg-gray-200 border py-2 border-gray-200  text-white text-sm rounded-lg block w-full p-2.5"
-              type="button"
-            >
-              View
-            </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-          
+      <div class="w-4/12 p-2"></div>
     </div>
+    <div class="overflow-y-auto h-[74svh]">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="sticky  border-b top-0 bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">Date</th>
+            <th scope="col" class="px-6 py-3"> user</th>
+            <th scope="col" class="px-6 py-3"> Clock In</th>
+            <th scope="col" class="px-6 py-3"> Clock Out</th>
+            <th scope="col" class="px-6 py-3"> Hour Worked</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="bg-white hover:bg-gray-50"
+            v-for="log in attendanceLog"
+            :key="log.userid"
+          >
+           
+            <td class="px-6 py-1">{{formatDate(log.date) }}</td>
+            <td class="px-6 py-1">{{ log.user }}</td>
+            <td class="px-6 py-1">{{ log.clockIn }}</td>
+            <td class="px-6 py-1">{{ log.clockOut }}</td>
+            <td class="px-6 py-1">{{ log.hoursWorked }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </template>
 <script setup>
 import { useFormatDate } from "@/composables/useFormatDate";
-import { useEmsStore } from '@/stores/emsStore';
+import useFirebase from "@/composables/useFirebase";
+import { ref, onMounted } from "vue";
 
-const emsStore = useEmsStore();
+onMounted(() => {
+  getUserAttendance();
+});
 
+const firebase = useFirebase();
 const { formatDate } = useFormatDate();
+const attendanceLog = ref([]);
+
+//get all user attendance and process it
+const getUserAttendance = async () => {
+  
+  try {
+    let data = await firebase.getAllAttendance();
+    const personalAttendance = [];
+    // Process logs for each user
+    for (const userId in data) {
+      const logsForUser = data[userId];
+      const sortedLogs = Object.values(logsForUser).sort(
+        (a, b) => new Date(a.time) - new Date(b.time)
+      );
+      let timeIn = null;
+      let timeOut = null;
+      for (const log of sortedLogs) {
+        const logTime = new Date(log.time);
+        if (log.logType === "clockIn") {
+          if (!timeIn || logTime < timeIn) {
+            timeIn = logTime;
+          }
+        } else if (log.logType === "clockOut") {
+          if (!timeOut || logTime > timeOut) {
+            timeOut = logTime;
+          }
+        }
+        if (timeIn && timeOut) {
+          const timeDiff = timeOut - timeIn;
+          const hoursWorked = (timeDiff / (1000 * 60 * 60)).toFixed(2);
+          personalAttendance.push({
+            user: log.user,
+            userId,
+            date: timeIn.toISOString().split("T")[0],
+            clockIn: timeIn.toLocaleTimeString(),
+            clockOut: timeOut.toLocaleTimeString(),
+            hoursWorked,
+          });
+          timeIn = null;
+          timeOut = null;
+        }
+      }
+    }
+    attendanceLog.value = personalAttendance;
+    console.log(
+      "🚀 ~ getUserAttendance ~ attendanceLog.value:",
+      attendanceLog.value
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 
 useHead({
-  title: "Employees",
+  title: "Timesheets",
+  meta: [{ name: "description", content: "Employer hub" }],
 });
 
 definePageMeta({
   // middleware: ["unauthemp"],
-  layout: "companyems",
+  layout: "userlayout",
 });
-
-const personalAttendance = ref([]);
-const startDate = ref('');
-const endDate = ref('');
 
 const refresh = () => {
   // employerListStore.loadAllListings();
 };
-
-
-
 </script>
