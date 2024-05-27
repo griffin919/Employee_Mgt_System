@@ -42,19 +42,20 @@
             </button>
           </div>
         </div>
+
+        <!-- Step 2: Update Account Info -->
         <div v-else-if="step === 2">
-          <!-- Step 2: Employment Information -->
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium text-gray-700" for="firstName">First Name</label>
             <input
               class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="firstName" type="text" placeholder="John" v-model="user.personalInfo.fname" />
+              id="firstName" type="text" placeholder="John" v-model="userProfile.fname" />
           </div>
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium text-gray-700" for="lastName">Last Name</label>
             <input
               class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="lastName" type="text" placeholder="Doe" v-model="user.personalInfo.lname" />
+              id="lastName" type="text" placeholder="Doe" v-model="userProfile.lname" />
           </div>
           <div class="mb-4 flex items-center">
             <div>
@@ -78,31 +79,20 @@
             <label class="block mb-2 text-sm font-medium text-gray-700" for="address">Phone Number</label>
             <input
               class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="address" type="text" placeholder="" v-model="user.accountInfo.phoneNumber" />
-          </div>
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium text-gray-700" for="dateOfBirth">Date of Birth</label>
-            <input
-              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="dateOfBirth" type="date" v-model="user.personalInfo.dateOfBirth" />
+              id="address" type="text" placeholder="" v-model="userProfile.phoneNumber" />
           </div>
           <div class="mb-4">
             <label class="block mb-2 text-sm font-medium text-gray-700" for="gender">Gender</label>
             <select
               class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="gender" v-model="user.personalInfo.gender">
+              id="gender" v-model="userProfile.gender">
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
           </div>
-          <div class="mb-4">
-            <label class="block mb-2 text-sm font-medium text-gray-700" for="department">Staff ID</label>
-            <input
-              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              id="department" type="text" placeholder="" v-model="user.personalInfo.staffid" />
-          </div>
+
           <div class="flex justify-between">
             <button
               class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
@@ -110,11 +100,62 @@
               Back
             </button>
             <button
+              class="px-4 py-2 text-sm font-semibold text-white bg-gray-500 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              type="button" @click="step = 3">
+              Next
+            </button>
+            <button
               class="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
               type="button" @click="UpdateUserInfo">
               Submit
             </button>
+          </div>
+        </div>
 
+        <!-- Step 3: Employment Information -->
+        <div v-else-if="step === 3">
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700" for="department">Staff ID</label>
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department" type="text" placeholder="" v-model="employmentInfo.staffid" />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700" for="department">Job Title</label>
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department" type="text" placeholder="" v-model="employmentInfo.jobTitle" />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700" for="department">Department</label>
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department" type="text" placeholder="" v-model="employmentInfo.department" />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700" for="dateOfBirth">Date of Birth</label>
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="dateOfBirth" type="date" v-model="userProfile.dateOfBirth" />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-2 text-sm font-medium text-gray-700" for="dateOfBirth">Hire Date</label>
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="dateOfBirth" type="date" v-model="employmentInfo.hireDate" />
+          </div>
+
+          <div class="flex justify-between">
+            <button
+              class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              type="button" @click="step = 2">
+              Back
+            </button>
+            <button
+              class="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+              type="button" @click="saveAdditionalUserData">
+              Submit
+            </button>
           </div>
         </div>
       </div>
@@ -130,13 +171,13 @@ import { useEmsStore } from '@/stores/emsStore';
 import { useAuthStore } from '@/stores/authStore';
 import useAuth from '@/composables/useAuth';
 
-
 const emsStore = useEmsStore();
 const authStore = useAuthStore();
 const userAuth = useAuth();
 const firebase = useFirebase();
 
-const previewImage = ref(null);
+let previewImage = ref(null);
+let imagefile = ref(null);
 
 const { showModal, hideModal } = useModal();
 const step = ref(1); // Current step of the form
@@ -144,19 +185,33 @@ const step = ref(1); // Current step of the form
 const loggedInUser = ref(null);
 
 const logit = () => {
-  // userAuth.setRefreshTokenCookie(user.accessToken);
-  const accessToken = useCookie('accessToken').value;
-  console.log("🚀 ~ logit ~ _user:", accessToken)
-  console.log("🚀 ~ logit ~ Current User:", firebase.getCurrentUser())
+
+  const user = firebase.getCurrentUser();
+  console.log("🚀 ~ logit ~ Current User:", user)
+  console.log("🚀 ~ logit ~ Current User:", authStore.role)
+  firebase.getUserClaims()
 }
 
-const verifyUser = () => {
-  const user = firebase.getCurrentUser();
-  console.log("🚀 ~ verifyUser ~ user:", user)
-  if (user) {
-    loggedInUser.value = user;
+
+const userProfile = ref(
+  {
+    email: "",
+    password: "",
+    phoneNumber: "",
+    photoURL: "",
+    fname: "",
+    lname: "",
+    gender: "",
+    dateOfBirth: "",
   }
-};
+);
+
+const employmentInfo = ref({
+  staffid: "",
+  jobTitle: "",
+  department: "",
+  hireDate: "",
+});
 
 const user = ref(
   {
@@ -172,7 +227,6 @@ const user = ref(
       address: "",
       dateOfBirth: "",
       gender: "",
-
     },
     employmentInfo: {
       staffid: "",
@@ -208,30 +262,44 @@ const user = ref(
     }
   }
 );
-const handleProfileImageUpload = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        previewImage.value = URL.createObjectURL(file);
-        console.log("🚀 ~ handleProfileImageUpload ~ previewImage:", previewImage)
-        // ... other image upload logic
-      } else {
-        this.previewImage = null;
-        console.log("🚀 ~ handleProfileImageUpload ~ previewImage:", previewImage)
-      }
-    };
 
+const saveAdditionalUserData = async () => {
+
+  const userData = {
+    fname: userProfile.value.fname,
+    lname: userProfile.value.lname,
+    gender: userProfile.value.gender,
+    dateOfBirth: userProfile.value.dateOfBirth,
+    staffid: employmentInfo.value.staffid,
+    jobTitle: employmentInfo.value.jobTitle,
+    department: employmentInfo.value.department,
+    hireDate: employmentInfo.value.hireDate,
+    employmentStatus: employmentInfo.value.employmentStatus,
+    supervisor: employmentInfo.value.supervisor
+  };
+  firebase.addCustomInfoToUserProfile(userData);
+    // hideModal('createAccountModal');
+};
+
+const handleProfileImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    previewImage = URL.createObjectURL(file);
+    imagefile = file;
+  } else {
+    previewImage = null;
+  }
+};
 
 const handleProfileImageUpload1 = async (file) => {
-  await firebase.uploadImage(file).then((response) => {
-    console.log('Image uploaded successfully:', response);
-    user.value.accountInfo.photoURL = response;
-    console.log("🚀 ~ handleProfileImageUpload ~ user.value.accountInfo.photoUR:", user.value.accountInfo)
-
-  }).catch((error) => {
+  try {
+    const imageUrl = await firebase.uploadImage(file);
+    userProfile.value.photoURL = imageUrl;
+    console.log("🚀 ~ imageUrl:", imageUrl);
+  } catch (error) {
     console.error('Error uploading image:', error);
-  });
-
-}
+  }
+};
 
 
 // const UpdateUserInfo = async () => {
@@ -254,14 +322,17 @@ const handleProfileImageUpload1 = async (file) => {
 //     console.error(error);
 //   });
 // }};
+
+//update user profile
 const UpdateUserInfo = async () => {
-  if (previewImage.value) {
-    await handleProfileImageUpload1(previewImage.value);
+  if (previewImage) {
+    await handleProfileImageUpload1(imagefile);
   };
 
-console.log("Updating user with:", user.value.accountInfo);
-   firebase.updateCurrentUser(user.value);
-};
+  console.log("🚀 ~ UpdateUserInfo ~ userProfile.value.uid:", userProfile.value.uid)
+  firebase.updateCurrentUser(userProfile.value);
+  firebase.getUserById(userProfile.value.uid);
+}
 
 const createUserAccount = async () => {
   console.log("Creating user with:", user.value.accountInfo);
@@ -271,9 +342,6 @@ const createUserAccount = async () => {
   }).catch((error) => {
     console.error(error);
   });
-
-  // const loggedInUser =  firebase.getCurrentUser();
-  // step.value = 2;
 };
 
 
@@ -281,4 +349,5 @@ const closeModal = () => {
   hideModal('createAccountModal');
   step.value = 1;
 };
+
 </script>

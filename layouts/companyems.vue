@@ -3,42 +3,49 @@
     <Modals />
     <div :class="['sidebar', { open: isOpen }]">
       <div class="logo-details">
-        <img src="../assets/RUCST_logo.jpg" class="icon w-10 h-10 rounded-full mr-4 " alt="ciraq logo">
+        <img
+          src="../assets/RUCST_logo.jpg"
+          class="icon w-10 h-10 rounded-full mr-4"
+          alt="ciraq logo"
+        />
         <div class="logo_name">Regent Admin</div>
-        <button class="bx bx-menu mr-2" id="btn" @click="toggleSidebar"></button>
+        <button
+          class="bx bx-menu mr-2"
+          id="btn"
+          @click="toggleSidebar"
+        ></button>
       </div>
       <ul class="nav-list">
-      
-        <li >
-          <nuxt-link to="/admin/Employees" >
+        <li>
+          <nuxt-link to="/admin/Employees">
             <i class="bx bx-group"></i>
             <span class="links_name">Employees</span>
           </nuxt-link>
           <span class="tooltip">Employees</span>
-        </li>      
-        <li >
-          <nuxt-link to="/admin/timesheets" >
+        </li>
+        <li>
+          <nuxt-link to="/admin/timesheets">
             <i class="bx bx-time-five"></i>
             <span class="links_name">Timesheets</span>
           </nuxt-link>
           <span class="tooltip">Timesheets</span>
         </li>
         <li>
-          <nuxt-link to="/admin/requests" >
+          <nuxt-link to="/admin/requests">
             <i class="bx bx-envelope-open"></i>
             <span class="links_name">Requests</span>
           </nuxt-link>
           <span class="tooltip">Requests</span>
-        </li>        
+        </li>
         <li>
-          <nuxt-link to="/admin/newemployee" >
+          <nuxt-link to="/admin/newemployee">
             <i class="bx bx-user-plus"></i>
             <span class="links_name">New Employee</span>
           </nuxt-link>
           <span class="tooltip">New Employee</span>
         </li>
         <li>
-          <nuxt-link to="/admin/profile" >
+          <nuxt-link to="/admin/profile">
             <i class="bx bx-user-circle"></i>
             <span class="links_name">Profile</span>
           </nuxt-link>
@@ -49,7 +56,7 @@
           <div class="profile-details">
             <img src="../assets/images/profile-image.jpg" alt="profileImg" />
             <div class="name_job">
-              <div class="name">Christian</div>
+              <div class="name">{{ userInfo.userRecord.displayName || ''}}</div>
               <div class="job"></div>
             </div>
           </div>
@@ -58,19 +65,26 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
-      <div class="flex items-center w-full bg-white p-4 mb-2 rounded-lg">
-         <div class="flex items-center">
-        <div class="mr-8">
-          <img class="w-[5rem] h-[5rem] rounded-full" src="https://i.postimg.cc/bryMmCQB/profile-image.jpg" alt="Profile Image">
+      <div class="flex justify-between items-center w-full bg-white p-4 mb-2 rounded-lg">
+        <div class="flex items-center ">
+          <div class="mr-8">
+            <img
+              class="w-[5rem] h-[5rem] rounded-full"
+              :src="userInfo.userData.photoURL || '../assets/images/profile-image.jpg'"
+              alt="Profile Image"
+            />
+          </div>
+          <div>
+            <p class="text-xl font-bold">{{ userInfo.userData.fname || '' }} {{ userInfo.userData.lname || ''}}</p>
+            <p class="text-sm text-gray-600">Department: {{ userInfo.userData.department }}</p>
+            <p class="text-sm text-gray-600">Employee ID: {{ userInfo.userData.staffid }}</p>
+          </div>
+        
         </div>
         <div>
-          <p class="text-xl font-bold">Ethan Rivers</p>
-          <p class="text-sm text-gray-600">Department</p>
-          <p class="text-sm text-gray-600">Employee ID</p>
+          <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
         </div>
       </div>
-
-    </div>
       <slot />
     </section>
   </div>
@@ -80,25 +94,40 @@
 import "boxicons/css/boxicons.min.css";
 import Modals from "@/components/UI/Modals.vue";
 import { useModalStore } from "@/stores/modalStore.js";
+import { useAuthStore } from "@/stores/authStore";
+import { ref, onMounted } from "vue";
+import useFirebase from "@/composables/useFirebase";
+
+
 const modalStore = useModalStore();
 const isOpen = ref(false);
+const firebase = useFirebase();
+
+const authStore = useAuthStore();
+
+const userInfo = ref(authStore.wholeUserInfo);
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
 };
 
+
+onMounted(() => {
+  firebase.getAllCurrentUserInfo();
+});
+
 const signOut = () => {
-  
   let info = "Confirm signout?";
-    modalStore.changeDialog(info);
+  modalStore.changeDialog(info);
   let func = {};
   // IF USER SELECTS YES CONTINUE FUNCTION
   func.yesfunc = async function () {
-     try {
-        // employerAuth.logout()
-      } catch (error) {
-        throw error; // Rethrow the error to handle it elsewhere if needed
-      }
+    try {
+      // employerAuth.logout()
+      await firebase.signOutUser();
+    } catch (error) {
+      throw error; // Rethrow the error to handle it elsewhere if needed
+    }
   };
 
   modalStore.OpenYesOrNOClick(func);
@@ -108,11 +137,9 @@ const signOut = () => {
 // import { useEmployerAuth } from "@/stores/employerAuth";
 // const employerAuth = useEmployerAuth();
 // const company = employerAuth.company;
-
 </script>
 
-<style >
-
+<style>
 .sidebar {
   position: fixed;
   left: 0;
@@ -138,7 +165,7 @@ const signOut = () => {
   transition: all 0.5s ease;
 }
 .sidebar .logo-details .logo_name {
-  color: #132E35;
+  color: #132e35;
   font-size: 16px;
   font-weight: 600;
   opacity: 0;
@@ -166,7 +193,7 @@ const signOut = () => {
 .sidebar i {
   color: #fff;
   padding-right: 1rem;
-  padding-left: .6rem; 
+  padding-left: 0.6rem;
   line-height: 60px;
 }
 .sidebar .nav-list {
@@ -216,7 +243,7 @@ const signOut = () => {
   border: none;
   border-radius: 12px;
   transition: all 0.5s ease;
-  background: #132E35;
+  background: #132e35;
 }
 .sidebar.open input {
   padding: 0 20px 0 50px;
@@ -236,7 +263,7 @@ const signOut = () => {
 }
 .sidebar li a:hover {
   background: #fff;
-  border:1px solid #132E35;
+  border: 1px solid #132e35;
 }
 .sidebar li a .links_name {
   color: #fff;
@@ -254,10 +281,9 @@ const signOut = () => {
 .sidebar li a:hover .links_name,
 .sidebar li a:hover i {
   transition: all 0.5s ease;
-  color: #132E35;
+  color: #132e35;
 }
 .sidebar li i {
-  
   font-size: 14px;
   border-radius: 12px;
 }
@@ -267,8 +293,8 @@ const signOut = () => {
   width: 55px;
   left: 0;
   bottom: -8px;
-  padding: 10px ;
-  color: #132E35;
+  padding: 10px;
+  color: #132e35;
   transition: all 0.5s ease;
   overflow: hidden;
 }
@@ -291,7 +317,7 @@ const signOut = () => {
 .sidebar li.profile .job {
   font-size: 15px;
   font-weight: 400;
-  color: #132E35;
+  color: #132e35;
   white-space: nowrap;
 }
 .sidebar li.profile .job {
@@ -313,7 +339,7 @@ const signOut = () => {
   display: flex;
   width: 50px;
   background: none;
-  color:red;
+  color: red;
   font: 800;
   padding-left: 1rem;
   font-size: 24px;
@@ -335,7 +361,7 @@ const signOut = () => {
 }
 .home-section .text {
   display: inline-block;
-  color: #132E35;
+  color: #132e35;
   font-size: 25px;
   font-weight: 500;
   margin: 18px;

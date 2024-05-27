@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center  justify-center min-h-screen bg-gray-100">
-        <div class="bg-white p-8 rounded-lg shadow-md" style="width: 23vw;">
+        <div class="bg-white p-8 rounded-lg shadow-md" style="width: 30vw;">
             <div class="flex items-center justify-center mb-6">
                 <img src="~/assets/RUCST_logo.jpg" alt="Logo" class="h-12" />
             </div>
@@ -31,7 +31,6 @@
             class="fixed top-0 left-0  right-0 z-50 hidden w-full p-4 overflow-hidden md:inset-0 h-[calc(100%-1rem)] max-h-[95vh]">
             <EmployeesAddUser />
         </div>
-
     </div>
 </template>
 
@@ -43,6 +42,13 @@ import { useEmsStore } from '@/stores/emsStore';
 const { hideModal, showModal, showClosableModal } = useModal();
 const emsStore = useEmsStore();
 const firestore = useFirebase();
+const authStore = useAuthStore();
+import { onMounted } from 'vue';
+
+
+onMounted(() => {
+    firestore.checkingAuthState();
+});
 
 const showRequestInfoModal = () => {
     showModal('createAccountModal');
@@ -55,9 +61,16 @@ const closeModal = () => {
 const email = ref('');
 const password = ref('');
 
+const logit = () => {
+    console.log(authStore.role, authStore);
+};
 const loginUser = async () => {
     try {
-        const response = firestore.signInUser(email.value, password.value);
+        firestore.signInUser(email.value, password.value);
+
+        if (authStore.user) {
+            firestore.getUserClaims();
+        };
     } catch (error) {
         console.error(error);
     }

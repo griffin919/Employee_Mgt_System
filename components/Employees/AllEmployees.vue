@@ -66,10 +66,10 @@
   const emsStore = useEmsStore();
 
   onMounted(() => {
-    const users = firebase.getUsers();
-    firebase.getAllUsers().then((users) => {
-      console.log("🚀 ~ onMounted ~ users:", users)
-    });
+    // const users = firebase.getUsers();
+    // firebase.getAllUsers().then((users) => {
+    //   console.log("🚀 ~ onMounted ~ users:", users)
+    // });
   });
   const employees = ref(emsStore.employees);
   const filteredEmployees = ref(employees.value);

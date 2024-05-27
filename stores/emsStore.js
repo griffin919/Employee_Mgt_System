@@ -5,61 +5,7 @@ export const useEmsStore = defineStore("emsStore", {
   state: () => ({
     loggedInUser: {},
     uName: null,
-    employees: [
-      {
-        id: 1,
-        name: "John Walker",
-        department: "IT",
-        role: "Jnr Developer",
-        profilePicture: "/assets/images/profile-image.jpg",
-        idNumber: "GHA28839182732283-7",
-        dateOfBirth: "1990-08-12",
-        dateEmployed: "2021-08-12",
-        address: "12 la bawaleshi",
-        region: "Accra",
-        idType: "Ghana card",
-        email: "John@gmai.com",
-        phoneNumber: "050 001 8533",
-        firstName: "John",
-        lastName: "Walker",
-      },
-      {
-        id: 2,
-        name: "Cristian S. Ansah",
-        department: "IT",
-        role: "Snr Software Engineer",
-        profilePicture: "/assets/images/profile-image.jpg",
-        idNumber: "GHA28839182732283-7",
-        dateOfBirth: "1990-08-12",
-        dateEmployed: "2021-08-12",
-        address: "12 la bawaleshi",
-        region: "Accra",
-        idType: "Ghana card",
-        email: "Cristian@gmail.com",
-        phoneNumber: "050 001 8533",
-        firstName: "Cristian",
-        lastName: "S. Ansah",
-      },
-      {
-        name: "Raymond Oppong Asare",
-        role: "Accountant",
-        firstName: "Raymond",
-        lastName: "Oppong Asare",
-        phoneNumber: "050 001 8533",
-        email: "rayopps@gmail.com",
-        address: "12 la bawaleshi",
-        region: "Accra",
-        idType: "Ghana card",
-        idNumber: "GHA28839182732283-7",
-        department: "Finance",
-        role: "Accountant",
-        profilePicture: "/assets/images/profile-image.jpg",
-        dateEmployed: "2021-08-12",
-        dateOfBirth: "1990-08-12",
-        id: 3,
-      },
-    ],
-
+    employees: null ,
      attendanceLog: [
         {
           employeeId: 1,
@@ -169,6 +115,25 @@ export const useEmsStore = defineStore("emsStore", {
     },
     setUsers(data) {
       this.employees = data;
+    },
+
+    appendAdditionalUserData(data) {
+      if (!this.employees) {
+        return;
+      }
+      this.employees.forEach((employee) => {
+        const uid = employee.userRecord?.uid;
+        if (uid) {
+          const userData = data[uid];
+          if (userData) {
+            employee.userData = userData;
+          } else {
+          }
+        } else {
+          console.log("employee has no uid");
+        }
+      });
     }
+
   },
 });
