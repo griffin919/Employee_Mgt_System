@@ -86,7 +86,7 @@
       </div>
       
 
-      <!-- <button @click="logit">Logit</button> -->
+      <button @click="logit">Logit</button>
 
       <!-- Add your main content here -->
       <slot />
