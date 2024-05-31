@@ -50,7 +50,6 @@
             v-for="(req, index) in userRequests"
             :key="index"
           >
-          
             <td class="px-6 py-1">{{ formatDate(req.dateCreated) }}</td>
             <td
               scope="row"
@@ -69,7 +68,8 @@
               {{ req.status }}
             </td>
             <td>
-              <button @click="showModalGen('manageRequestModal', req)"
+              <button
+                @click="showModalGen('manageRequestModal', req)"
                 class="bg-white hover:bg-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
               >
                 View
@@ -80,66 +80,66 @@
       </table>
     </div>
 
-
-    
-  <!-- Manage Request Modal -->
-  <div
-    id="manageRequestModal"
-    data-modal-target="UpdateUserRole"
-    aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden overflow-hidden md:inset-0"
-  >
+    <!-- Manage Request Modal -->
     <div
-      class="bg-white p-4 w-2/6 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+      id="manageRequestModal"
+      data-modal-target="UpdateUserRole"
+      aria-hidden="true"
+      class="fixed top-0 left-0 right-0 z-50 hidden overflow-hidden md:inset-0"
     >
-      <div>
-        <i
-          @click="closeModalGen('manageRequestModal')"
-          class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
-        ></i>
-      </div>
-      <div>
-        <select
-            v-model="selectedRequest.status"
-              class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="grid-state"
-            >
-              <option value="cancelled">cancel</option>
-            </select>
-      </div>
-      <div class="flex justify-end mt-3">
-        <button
-          @click="updateRequestStatus('manageRequestModal')"
-          class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
-          type="button"
-        >
-          Update
-        </button>
+      <div
+        class="bg-white p-4 w-2/6 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+      >
+        <div>
+          <i
+            @click="closeModalGen('manageRequestModal')"
+            class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+          ></i>
+        </div>
+        <div>
+          <select
+          v-if="selectedRequest"
+            v-model="selectedRequest.status" 
+            class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-state"
+          >
+            <option value="pending">Pending</option>
+            <option value="accepted">Accept</option>
+            <option value="rejected">Reject</option>
+            <option value="cancelled">Cancel</option>
+          </select>
+        </div>
+        <div class="flex justify-end mt-3">
+          <button
+            @click="updateRequestStatus('manageRequestModal')"
+            class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
+            type="button"
+          >
+            Update
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-
   </div>
 </template>
 <script setup>
 import { useFormatDate } from "@/composables/useFormatDate";
-import { ref , onMounted} from "vue";
+import { ref, onMounted } from "vue";
 import useModal from "@/composables/useModal";
 import { useEmsStore } from "@/stores/emsStore";
 import useFirebase from "@/composables/useFirebase";
 
-const selectedRequest = ref({});
+//
+onMounted(() => {
+  getUserRequests();
+});
 
+const selectedRequest = ref({});
 const firebase = useFirebase();
-const emsStore = useEmsStore();
 const userRequests = ref({});
 
 const { hideModal, showModal, showClosableModal } = useModal();
 const { formatDate } = useFormatDate();
-
-onMounted(() => {
-  getUserRequests();
-});
 
 useHead({
   title: "Requests",
@@ -151,13 +151,59 @@ definePageMeta({
   layout: "userlayout",
 });
 
-const personalAttendance = ref([]);
 
-const refresh = () => {
-  // employerListStore.loadAllListings();
+
+// Update request status
+const updateRequestStatus = async (id) => {
+  if (!selectedRequest.value) return;
+
+  const user = firebase.auth.currentUser;
+  const req = selectedRequest.value;
+
+  const updates = {};
+  updates[`requests/${user.uid}/${req.requestid}/status`] = req.status;
+
+  firebase
+    .update(firebase.dbref(firebase.db), updates)
+    .then(() => {
+      // User role updated successfully
+      alert("Request status updated successfully");
+      closeModalGen(id);
+      getUserRequests();
+    })
+    .catch((error) => {
+      console.error("Error updating request status", error);
+      alert("An error occurred");
+    });
 };
 
-const showModalGen = (id,req) => {
+// get logged in user's requests
+const getUserRequests = async () => {
+  const user1 = firebase.auth.currentUser;
+  if (!user1) {
+    return;
+  }
+  const uid = user1.uid;
+  console.log("🚀 ~ getUserRequests ~ user1:", user1.uid);
+
+  const requestsRef = firebase.dbref(firebase.db, "requests/" + uid);
+  return new Promise((resolve, reject) => {
+    firebase.onValue(
+      requestsRef,
+      (snapshot) => {
+        const sn = snapshot.val();
+        userRequests.value = sn;
+        console.log("🚀 ~ returnnewPromise ~ userRequests:", userRequests.value)
+        resolve(sn);
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+};
+
+const showModalGen = (id, req) => {
   selectedRequest.value = req;
   showModal(id);
 };
@@ -165,20 +211,5 @@ const showModalGen = (id,req) => {
 const closeModalGen = (id) => {
   hideModal(id);
   selectedRequest.value = {};
-};
-
-const updateRequestStatus = async (id) => {
-  const user = firebase.auth.currentUser;
-  const req = selectedRequest.value;
-  await firebase.updateRequestStatus(user.uid, req.requestid, req.status);
-  closeModalGen(id);
-  getUserRequests();
-};  
-
-const getUserRequests = async () => {
-  const user = firebase.auth.currentUser;
-  const userReqs = await firebase.getUserRequests(user.uid);
-  userRequests.value = userReqs;
-  console.log("🚀 ~ getUserRequests ~ userRequests:", userRequests)
 };
 </script>

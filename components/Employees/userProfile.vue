@@ -236,10 +236,7 @@ const { closeModal } = useModal();
 const authComp = useAuth();
 const firebase = useFirebase();
 
-onMounted(() => {
-  // console.log("selectedEmployee", selectedEmployee);
-  // firebase.checkingAuthState();
-});
+
 
 const showModalGen = (id) => {
   showModal(id);
