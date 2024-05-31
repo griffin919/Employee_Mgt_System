@@ -75,6 +75,8 @@ const firebase = useFirebase();
 const previewImageUrl = ref(null);
 const imageFile = ref(null);
 
+const authStore = useAuthStore();
+
 const handleProfileImageUpload = (event) => {
   const file = event.target.files?.[0];
   if (file) {
@@ -100,6 +102,7 @@ const updateProfileImage = async () => {
       photoURL: imageUrl,
     });
     alert("Profile image updated successfully");
+    firestore.getUserClaims();
   } catch (error) {
     console.error("Error uploading image:", error);
     alert("An error occurred while updating the profile.");

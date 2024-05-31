@@ -59,7 +59,9 @@
               <div class="name">
                 {{ userInfo.userProfile.displayName || "" }}
               </div>
-              <div class="job"></div>
+              <div class="job">
+                {{userInfo.userData.jobTitle }}
+              </div>
             </div>
           </div>
           <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
@@ -67,35 +69,50 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
-      <div
-        class="flex justify-between items-center w-full bg-white p-4 mb-2 rounded-lg"
-      >
+            <div class="flex justify-between items-center w-full bg-white p-4 mb-4 rounded-lg">
         <div class="flex items-center">
           <div class="mr-8">
             <img
-              v-if="userInfo.userProfile"
               class="w-[5rem] h-[5rem] rounded-full"
-              :src="userInfo.userProfile.photoURL"
+              :src="userInfo.userProfile.photoURL || ''"
               alt="Profile Image"
             />
           </div>
-          <div v-if="userInfo.userData">
+          <div>
             <p class="text-xl font-bold">
               {{ userInfo.userData.fname || "" }}
               {{ userInfo.userData.lname || "" }}
             </p>
             <p class="text-sm text-gray-600">
-              Department: {{ userInfo.userData.department }}
+              Department: {{ userInfo.userData.department || ''}}
             </p>
             <p class="text-sm text-gray-600">
-              Employee ID: {{ userInfo.userData.staffid }}
+              Employee ID: {{ userInfo.userData.staffid || '' }}
             </p>
           </div>
         </div>
         <div>
-          <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
+          <i class="bx bx-camera" @click="showModalGen('updateProfileImgModal')"></i>
         </div>
       </div>
+      
+<!-- Update Profile Image modal -->
+        <div
+          id="updateProfileImgModal"
+          data-modal-target="userInfoModal"
+          aria-hidden="true"
+          class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
+        >
+          <div
+            class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+          >
+            <i
+              @click="closeModalGen('updateProfileImgModal')"
+              class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+            ></i>
+            <EmployeesUpdateProfileImg />
+          </div>
+        </div>
       <slot />
     </section>
   </div>
@@ -107,24 +124,33 @@ import Modals from "@/components/UI/Modals.vue";
 import { useModalStore } from "@/stores/modalStore.js";
 import { ref, onMounted } from "vue";
 import useFirebase from "@/composables/useFirebase";
+import useAuth from "@/composables/useAuth";
+
+const userAuth = useAuth();
+const { hideModal, showModal, showClosableModal } = useModal();
+
+const firebase = useFirebase();
 
 const modalStore = useModalStore();
 const isOpen = ref(false);
-const firebase = useFirebase();
-const userInfo = ref("");
+
+const authStore = useAuthStore();
+const userInfo = authStore.getUser;
+
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
+  console.log(userInfo)
 };
 
-onMounted(() => {
-  // get user data from local storage
-  // check if data exists in local storage
-  let usr = JSON.parse(localStorage.getItem("user"));
-  if (usr) {
-    userInfo.value = usr;
-  }
-});
+const logit = () => {
+};
+
+
+const showModalGen = (id) => {
+  showModal(id);
+};
+
 
 const signOut = () => {
   let info = "Confirm signout?";
@@ -136,11 +162,17 @@ const signOut = () => {
       // employerAuth.logout()
       await firebase.signOutUser();
     } catch (error) {
-      throw error; // Rethrow the error to handle it elsewhere if needed
+      throw error; 
     }
   };
 
   modalStore.OpenYesOrNOClick(func);
+};
+
+
+
+const closeModalGen = (id) => {
+  hideModal(id);
 };
 </script>
 

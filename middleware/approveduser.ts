@@ -5,18 +5,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const userProfile = userAuth.user;
   
   console.log(userProfile)
-  const userRole = userProfile.customClaims.role;
+
   
-  console.log(userRole)
   // Check if the userProfile object exists and the role is "user"
-  if (userProfile.customClaims.role === 'user') {
+if(!!userProfile){
+  const userRole = userProfile.userProfile.customClaims.role;
+  console.log("userrole", userRole)
+  if (userRole === 'user') {
     
     return await navigateTo('/timesheets');
-  }
-
-  // If the user is an authenticated employer, redirect to /employer/dashboard
-  if (userProfile.customClaims.role === 'employer') {
+  }  else if (userRole === 'employer') {
     return await navigateTo('/employer/dashboard');
   }
 
+}
 });

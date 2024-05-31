@@ -42,14 +42,14 @@
           <div class="profile-details">
             <img
               :src="
-                userInfo.userRecord.photoURL ||
+                userInfo.userProfile.photoURL ||
                 '../assets/images/profile-image.jpg'
               "
               alt="profileImg"
             />
             <div class="name_job">
-              <div class="name">Christian</div>
-              <div class="job"></div>
+              <div class="name">{{ userInfo.userProfile.displayName || "" }} </div>
+              <div class="job">{{userInfo.userData.jobTitle }}</div>
             </div>
           </div>
           <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
@@ -62,7 +62,7 @@
           <div class="mr-8">
             <img
               class="w-[5rem] h-[5rem] rounded-full"
-              :src="userInfo.userRecord.photoURL || ''"
+              :src="userInfo.userProfile.photoURL || ''"
               alt="Profile Image"
             />
           </div>
@@ -80,14 +80,27 @@
           </div>
         </div>
         <div>
-          <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
+          <i class="bx bx-camera" @click="showModalGen('updateProfileImgModal')"></i>
         </div>
-        <!-- <button @click="logit">Logit</button> -->
       </div>
       
-
-      <button @click="logit">Logit</button>
-
+<!-- Update Profile Image modal -->
+        <div
+          id="updateProfileImgModal"
+          data-modal-target="userInfoModal"
+          aria-hidden="true"
+          class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
+        >
+          <div
+            class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+          >
+            <i
+              @click="closeModalGen('updateProfileImgModal')"
+              class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+            ></i>
+            <EmployeesUpdateProfileImg />
+          </div>
+        </div>
       <!-- Add your main content here -->
       <slot />
     </section>
@@ -99,8 +112,11 @@ import "boxicons/css/boxicons.min.css";
 import Modals from "@/components/UI/Modals.vue";
 import { useModalStore } from "@/stores/modalStore.js";
 import { ref, onMounted } from "vue";
-import { useAuthStore } from "@/stores/authStore";
 import useFirebase from "@/composables/useFirebase";
+import useAuth from "@/composables/useAuth";
+
+const userAuth = useAuth();
+const { hideModal, showModal, showClosableModal } = useModal();
 
 const firebase = useFirebase();
 
@@ -108,22 +124,22 @@ const modalStore = useModalStore();
 const isOpen = ref(false);
 
 const authStore = useAuthStore();
-const userProfile = ref(authStore.userProfile);
-const userInfo = ref(authStore.wholeUserInfo);
+const userInfo = authStore.getUser;
 
-onMounted(() => {
-  firebase.getAllCurrentUserInfo();
-});
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
+  console.log(userInfo)
 };
 
 const logit = () => {
-  firebase.getAllCurrentUserInfo();
-
-  console.log("logit", userInfo.value);
 };
+
+
+const showModalGen = (id) => {
+  showModal(id);
+};
+
 
 const signOut = () => {
   let info = "Confirm signout?";
@@ -135,17 +151,18 @@ const signOut = () => {
       // employerAuth.logout()
       await firebase.signOutUser();
     } catch (error) {
-      throw error; // Rethrow the error to handle it elsewhere if needed
+      throw error; 
     }
   };
 
   modalStore.OpenYesOrNOClick(func);
 };
 
-// company import
-// import { useEmployerAuth } from "@/stores/employerAuth";
-// const employerAuth = useEmployerAuth();
-// const company = employerAuth.company;
+
+
+const closeModalGen = (id) => {
+  hideModal(id);
+};
 </script>
 
 <style>
