@@ -52,11 +52,13 @@
           <span class="tooltip">Profile</span>
         </li>
 
-        <li class="profile">
+        <li class="profile" v-if="userInfo.userProfile">
           <div class="profile-details">
-            <img src="../assets/images/profile-image.jpg" alt="profileImg" />
+            <img :src="userInfo.userProfile.photoURL" alt="profileImg" />
             <div class="name_job">
-              <div class="name">{{ userInfo.userRecord.displayName || ''}}</div>
+              <div class="name">
+                {{ userInfo.userProfile.displayName || "" }}
+              </div>
               <div class="job"></div>
             </div>
           </div>
@@ -65,21 +67,30 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
-      <div class="flex justify-between items-center w-full bg-white p-4 mb-2 rounded-lg">
-        <div class="flex items-center ">
+      <div
+        class="flex justify-between items-center w-full bg-white p-4 mb-2 rounded-lg"
+      >
+        <div class="flex items-center">
           <div class="mr-8">
             <img
+              v-if="userInfo.userProfile"
               class="w-[5rem] h-[5rem] rounded-full"
-              :src="userInfo.userData.photoURL || '../assets/images/profile-image.jpg'"
+              :src="userInfo.userProfile.photoURL"
               alt="Profile Image"
             />
           </div>
-          <div>
-            <p class="text-xl font-bold">{{ userInfo.userData.fname || '' }} {{ userInfo.userData.lname || ''}}</p>
-            <p class="text-sm text-gray-600">Department: {{ userInfo.userData.department }}</p>
-            <p class="text-sm text-gray-600">Employee ID: {{ userInfo.userData.staffid }}</p>
+          <div v-if="userInfo.userData">
+            <p class="text-xl font-bold">
+              {{ userInfo.userData.fname || "" }}
+              {{ userInfo.userData.lname || "" }}
+            </p>
+            <p class="text-sm text-gray-600">
+              Department: {{ userInfo.userData.department }}
+            </p>
+            <p class="text-sm text-gray-600">
+              Employee ID: {{ userInfo.userData.staffid }}
+            </p>
           </div>
-        
         </div>
         <div>
           <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
@@ -94,26 +105,25 @@
 import "boxicons/css/boxicons.min.css";
 import Modals from "@/components/UI/Modals.vue";
 import { useModalStore } from "@/stores/modalStore.js";
-import { useAuthStore } from "@/stores/authStore";
 import { ref, onMounted } from "vue";
 import useFirebase from "@/composables/useFirebase";
-
 
 const modalStore = useModalStore();
 const isOpen = ref(false);
 const firebase = useFirebase();
-
-const authStore = useAuthStore();
-
-const userInfo = ref(authStore.wholeUserInfo);
+const userInfo = ref("");
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
 };
 
-
 onMounted(() => {
-  firebase.getAllCurrentUserInfo();
+  // get user data from local storage
+  // check if data exists in local storage
+  let usr = JSON.parse(localStorage.getItem("user"));
+  if (usr) {
+    userInfo.value = usr;
+  }
 });
 
 const signOut = () => {
@@ -132,11 +142,6 @@ const signOut = () => {
 
   modalStore.OpenYesOrNOClick(func);
 };
-
-// company import
-// import { useEmployerAuth } from "@/stores/employerAuth";
-// const employerAuth = useEmployerAuth();
-// const company = employerAuth.company;
 </script>
 
 <style>

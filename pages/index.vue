@@ -50,6 +50,8 @@ onMounted(() => {
     firestore.checkingAuthState();
 });
 
+
+
 const showRequestInfoModal = () => {
     showModal('createAccountModal');
 };
