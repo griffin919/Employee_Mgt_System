@@ -55,9 +55,8 @@
         <tbody>
           <tr
             class="bg-white border-b hover:bg-gray-50"
-            v-for="(employee, index) in emsStore.employees"
+            v-for="(employee, index) in employees"
             :key="employee.userRecord.uid"
-            v-if="emsStore.employees"
           >
             <td class="px-6 py-1">
               <!-- <img class="w-[2rem] h-[2rem] rounded-full" src="../../assets/images/generic_userimg.jpg" alt="Profile Image"> -->
@@ -111,18 +110,15 @@
 import { useFormatDate } from "@/composables/useFormatDate";
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
-import { useEmsStore } from "@/stores/emsStore";
 import { onMounted, ref, nextTick } from "vue";
 import useAuth from "@/composables/useAuth";
 
 const authComp = useAuth();
 
-const emsStore = useEmsStore();
-
 const { hideModal, showModal, showClosableModal } = useModal();
 const { formatDate } = useFormatDate();
 const firebase = useFirebase();
-const employees = emsStore.employees;
+const employees = ref([]);
 const personalAttendance = ref([]);
 const roleValue = ref("");
 // const filteredEmployees = ref(employees.value);
@@ -142,7 +138,6 @@ onMounted(() => {
 const logit = () => {
   // authComp.fetchAllUsers();
   firebase.getUsers();
-  console.log("Employees2:", emsStore.employees);
   // console.log("Users:", users);
 };
 

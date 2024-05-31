@@ -41,9 +41,8 @@
         <li class="profile">
           <div class="profile-details">
             <img
-              v-if="userInfo.userProfile"
               :src="
-                userInfo.userProfile.photoURL ||
+                userInfo.userRecord.photoURL ||
                 '../assets/images/profile-image.jpg'
               "
               alt="profileImg"
@@ -58,56 +57,38 @@
       </ul>
     </div>
     <section :class="['home-section', { open: isOpen }]">
-      <div
-        class="flex justify-between items-center w-full bg-white p-4 mb-4 rounded-lg"
-      >
+      <div class="flex justify-between items-center w-full bg-white p-4 mb-4 rounded-lg">
         <div class="flex items-center">
-          <div class="mr-8" v-if="userInfo.userProfile">
+          <div class="mr-8">
             <img
               class="w-[5rem] h-[5rem] rounded-full"
+              :src="userInfo.userRecord.photoURL || ''"
               alt="Profile Image"
-              :src="userInfo.userProfile.photoURL || ''"
             />
           </div>
           <div>
-            <p class="text-xl font-bold" v-if="userInfo.userData">
+            <p class="text-xl font-bold">
               {{ userInfo.userData.fname || "" }}
               {{ userInfo.userData.lname || "" }}
             </p>
-            <p class="text-sm text-gray-600" v-if="userInfo.userData">
-              Department: {{ userInfo.userData.department || "" }}
+            <p class="text-sm text-gray-600">
+              Department: {{ userInfo.userData.department || ''}}
             </p>
-            <p class="text-sm text-gray-600" v-if="userInfo.userData">
-              Employee ID: {{ userInfo.userData.staffid || "" }}
+            <p class="text-sm text-gray-600">
+              Employee ID: {{ userInfo.userData.staffid || '' }}
             </p>
           </div>
         </div>
         <div>
-          <i @click="signOut" class="bx bx-log-out mx-3" id="log_out"></i>
-          <!-- update profile image -->
-          <i class="bx bx-camera" @click="showModalGen('updateProfileImgModal')"></i>
+          <i @click="signOut" class="bx bx-log-out" id="log_out"></i>
         </div>
-
-
-        <!-- Update Profile Image modal -->
-        <div
-          id="updateProfileImgModal"
-          data-modal-target="userInfoModal"
-          aria-hidden="true"
-          class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
-        >
-          <div
-            class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
-          >
-            <i
-              @click="closeModalGen('updateProfileImgModal')"
-              class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
-            ></i>
-            <EmployeesUpdateProfileImg />
-          </div>
-        </div>
+        <!-- <button @click="logit">Logit</button> -->
       </div>
+      
 
+      <button @click="logit">Logit</button>
+
+      <!-- Add your main content here -->
       <slot />
     </section>
   </div>
@@ -118,28 +99,30 @@ import "boxicons/css/boxicons.min.css";
 import Modals from "@/components/UI/Modals.vue";
 import { useModalStore } from "@/stores/modalStore.js";
 import { ref, onMounted } from "vue";
+import { useAuthStore } from "@/stores/authStore";
 import useFirebase from "@/composables/useFirebase";
-import useAuth from "@/composables/useAuth";
 
 const firebase = useFirebase();
-const userAuth = useAuth();
+
 const modalStore = useModalStore();
 const isOpen = ref(false);
-const { hideModal, showModal, showClosableModal } = useModal();
 
-const userInfo = ref("");
+const authStore = useAuthStore();
+const userProfile = ref(authStore.userProfile);
+const userInfo = ref(authStore.wholeUserInfo);
 
 onMounted(() => {
-  // get user data from local storage
-  // check if data exists in local storage
-  let usr = JSON.parse(localStorage.getItem("user"));
-  if (usr) {
-    userInfo.value = usr;
-  }
+  firebase.getAllCurrentUserInfo();
 });
 
 const toggleSidebar = () => {
   isOpen.value = !isOpen.value;
+};
+
+const logit = () => {
+  firebase.getAllCurrentUserInfo();
+
+  console.log("logit", userInfo.value);
 };
 
 const signOut = () => {
@@ -159,14 +142,10 @@ const signOut = () => {
   modalStore.OpenYesOrNOClick(func);
 };
 
-const showModalGen = (id) => {
-  showModal(id);
-};
-
-const closeModalGen = (id) => {
-  hideModal(id);
-};
-
+// company import
+// import { useEmployerAuth } from "@/stores/employerAuth";
+// const employerAuth = useEmployerAuth();
+// const company = employerAuth.company;
 </script>
 
 <style>

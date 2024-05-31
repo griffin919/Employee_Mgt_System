@@ -129,7 +129,6 @@ import { ref } from 'vue';
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
 import { update } from 'firebase/database';
-import { useEmsStore } from '@/stores/emsStore';
 import { useAuthStore } from '@/stores/authStore';
 import useAuth from '@/composables/useAuth';
 
@@ -143,7 +142,6 @@ definePageMeta({
   layout: "companyems",
 });
 
-const emsStore = useEmsStore();
 const authStore = useAuthStore();
 const userAuth = useAuth();
 const firebase = useFirebase();

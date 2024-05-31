@@ -126,7 +126,6 @@
 import { useFormatDate } from "@/composables/useFormatDate";
 import { ref, onMounted } from "vue";
 import useModal from "@/composables/useModal";
-import { useEmsStore } from "@/stores/emsStore";
 import useFirebase from "@/composables/useFirebase";
 
 //

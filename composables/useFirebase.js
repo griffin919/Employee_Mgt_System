@@ -16,7 +16,6 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from "firebase/auth";
-import { useEmsStore } from "@/stores/emsStore";
 import {
   getStorage,
   ref as sref,
@@ -45,7 +44,6 @@ export default function useFirebase() {
   const db = getDatabase(app);
   const auth = getAuth(app); // Moved the auth initialization here
   const authStore = useAuthStore();
-  const emsStore = useEmsStore();
   const storage = getStorage(app); // Get the storage instance from the app
   const userAuth = useAuth();
 
@@ -87,11 +85,8 @@ export default function useFirebase() {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        getAllCurrentUserInfo();
-        handleRedirect();
-
-        // authStore.setUserProfile(userCredential.user);
-        getUserById();
+        const usr = auth.currentUser;
+        authStore.getCurrentUser(usr.uid);
         alert("User signed in successfully");
       })
       .catch((error) => {
@@ -100,73 +95,12 @@ export default function useFirebase() {
       });
   };
 
-  // listen for auth state changes
-  const checkingAuthState = () => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          handleRedirect();
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      } else {
-        // No user is signed in.
-        console.log("No user is signed in");
-        authStore.clearUserData();
-      }
-    });
-    // Clean up the listener when the component is unmounted
-    return unsubscribe;
-  };
-
-  // handle redirect based on user role and account status
-  const handleRedirect = async () => {
-    // lets make sure we have the latest user data
-    const usr = auth.currentUser;
-    await userAuth.getUserInfoByID(usr.uid);
-
-    // user data is in local storage, so lets get it
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    // from firebase functions admin sdk
-    const role = user.userProfile.customClaims.role;
-    const accountStatus = user.userProfile.customClaims.accountStatus;
-
-    // redirect based on user role and account status
-    if (role === "admin") {
-      if (accountStatus === "accepted") {
-        navigateTo("/admin/employees");
-      } else {
-        const message =
-          accountStatus === "pending"
-            ? "Your account is still pending approval"
-            : "Your account has been rejected, Please contact an admin";
-        alert(message);
-        navigateTo("/");
-      }
-    } else if (role === "user") {
-      if (accountStatus === "accepted") {
-        navigateTo("/requests");
-      } else {
-        const message =
-          accountStatus === "pending"
-            ? "Your account is still pending approval"
-            : "Your account has been rejected, Please contact an admin";
-        alert(message);
-        navigateTo("/");
-      }
-    }
-  };
-
   // Sign out user
   const signOutUser = async () => {
     auth.signOut().then(() => {
       // Sign-out successful.
+      authStore.logout(usr.uid);
       console.log("User signed out");
-      authStore.clearUserData();
-      navigateTo("/");
-      // clear user from local storage
-      localStorage.removeItem("user");
     });
   };
 
@@ -212,17 +146,6 @@ export default function useFirebase() {
     }
   };
 
-  // Get user by id
-  const getUserById = async () => {
-    const uid = auth.currentUser.uid;
-
-    const userRef = dbref(db, `users/${uid}`);
-    onValue(userRef, (snapshot) => {
-      const data = snapshot.val();
-      authStore.setWholeUserInfoUserData(data);
-    });
-  };
-
   // Get user claims/ access levels
   const getUserClaims = async () => {
     getAuth(app)
@@ -264,7 +187,6 @@ export default function useFirebase() {
     const usersRef = dbref(db, "users/");
     onValue(usersRef, (snapshot) => {
       const sn = snapshot.val();
-      emsStore.appendAdditionalUserData(sn);
       console.log("🚀 ~ file: useFirebase.js ~ line 162 ~ onValue ~ data", sn);
     });
   };
@@ -292,10 +214,8 @@ export default function useFirebase() {
       if (!user) {
         return;
       }
-      await userAuth.getUserInfoByID(user.uid);
-      // await getUserClaims();
-      // await getUserById();
-      // authStore.setWholeUserInfoUserRecord(user);
+      // await userAuth.getUserInfoByID(user.uid);
+      
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -357,15 +277,12 @@ export default function useFirebase() {
   return {
     signInUser,
     getUsers,
-    getUserById,
     getCurrentUser,
     sref,
     uploadImage,
     getUserClaims,
-    checkingAuthState,
     updateUserRole,
     signOutUser,
-    getAllCurrentUserInfo,
     createUserWithEmailAndPassword,
     auth,
     updateProfile,

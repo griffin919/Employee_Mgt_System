@@ -38,19 +38,10 @@
 import { ref } from 'vue';
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
-import { useEmsStore } from '@/stores/emsStore';
 const { hideModal, showModal, showClosableModal } = useModal();
-const emsStore = useEmsStore();
 const firestore = useFirebase();
 const authStore = useAuthStore();
 import { onMounted } from 'vue';
-
-
-onMounted(() => {
-    firestore.checkingAuthState();
-});
-
-
 
 const showRequestInfoModal = () => {
     showModal('createAccountModal');
@@ -66,6 +57,7 @@ const password = ref('');
 const logit = () => {
     console.log(authStore.role, authStore);
 };
+
 const loginUser = async () => {
     try {
         firestore.signInUser(email.value, password.value);

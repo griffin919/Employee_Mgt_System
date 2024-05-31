@@ -6,22 +6,7 @@
     <div class="bg-white rounded-lg shadow-md max-w-lg p-7 w-full mx-4">
       <div class="flex justify-between items-center px-4 py-2 border-b">
         <h3 class="text-lg font-semibold">Create Employee Account</h3>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-800">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
-        </button>
+        
       </div>
       <div class="p-4">
         <div v-if="step === 1">
@@ -55,19 +40,20 @@
             />
           </div>
           <div class="flex justify-between">
+           
             <button
+              class="px-4 py-2 text-sm font-semibold text-white bg-gray-500 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              type="button"
+              @click="closeModal"
+            >
+              Cancel
+            </button>
+             <button
               class="px-4 py-2 text-sm font-semibold text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               type="button"
               @click="createUserAccount"
             >
               Create Account
-            </button>
-            <button
-              class="px-4 py-2 text-sm font-semibold text-white bg-gray-500 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              type="button"
-              @click="checkUserLoggedIn(2)"
-            >
-              Next
             </button>
           </div>
         </div>
@@ -136,13 +122,7 @@
           </div>
 
           <div class="flex justify-between">
-            <button
-              class="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
-              type="button"
-              @click="UpdateUserInfo"
-            >
-              Submit
-            </button>
+            
             <div class="flex justify-between">
               <button
                 class="px-4 py-2 mx-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
@@ -258,13 +238,11 @@
 import { ref } from "vue";
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
-import { useEmsStore } from "@/stores/emsStore";
 import { useAuthStore } from "@/stores/authStore";
 import useAuth from "@/composables/useAuth";
 import validate from "validate.js";
 import validator from "validator";
 
-const emsStore = useEmsStore();
 const authStore = useAuthStore();
 const userAuth = useAuth();
 const firebase = useFirebase();
@@ -304,7 +282,8 @@ const createUserAccount = () => {
     .then((userCredential) => {
       // lets get the user data and store it in local storage
 
-      alert("User signed up successfully");
+      // alert("User signed up successfully");
+      checkUserLoggedIn(2);
       // Signed up
     })
     .catch((error) => {
@@ -364,6 +343,7 @@ const UpdateUserInfo = () => {
 // Now lets update the users additional data in the realtime database
 // firebase auth allows only predefined valuse i.e username, email, photoURL, phoneNumber, and displayName
 function saveAdditionalUserData() {
+  UpdateUserInfo()
   const user = firebase.auth.currentUser;
   if (!user) return; // Exit if there's no authenticated user
 

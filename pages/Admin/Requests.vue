@@ -235,12 +235,10 @@
 import { useFormatDate } from "@/composables/useFormatDate";
 import { ref } from "vue";
 import useModal from "@/composables/useModal";
-import { useEmsStore } from "@/stores/emsStore";
 
 const selectedRequest = ref({});
 
 const firebase = useFirebase();
-const emsStore = useEmsStore();
 const userRequests = ref({});
 
 const { hideModal, showModal, showClosableModal } = useModal();

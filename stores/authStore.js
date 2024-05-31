@@ -1,50 +1,71 @@
-import { set } from 'firebase/database';
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-export const useAuthStore = defineStore('useAuthStore', {
-  state: () => ({
-    claims: {},
-    userProfile: {},
-    userInfo:{},
-    wholeUserInfo: {
-      userRecord: {},
-      userData: {},
-    },
-    wholeUserProfile: {},
-  }),
+export const useAuthStore = defineStore("authStore", {
+  state: () => {
+    // Attempt to fetch user details from localStorage
+    const userDetails = localStorage.getItem('userDetails');
+    // if info exist in cache set it else null 
+    const user = userDetails ? JSON.parse(userDetails) : null;    
+    
+    return {
+      user,
+    }
+  },
+
+
   getters: {
-    isAuthenticated() {
-      return !!this.accessToken;
-    },
+    getUser() {
+      return this.user;
+    },  
   },
-  actions: {
-    setClaims(data) {
-      this.wholeUserInfo.userRecord.customClaims = data;
-    },
-    async logout() {
-      this.role = '';
-    },
-    setUserProfile(userProfile) {
-      this.userProfile = userProfile;
-    },
-    setUserInfo(userInfo) {
-      this.userInfo = userInfo;
-    },
-    setWholeUserProfile(data) {
-      this.wholeUserProfile = data;
-    },
-    setWholeUserInfoUserRecord(data) {
-      this.wholeUserInfo.userRecord = data;
-    },
-    setWholeUserInfoUserData(data) {
-      this.wholeUserInfo.userData = data;
-    },
-    clearUserData() {
-      this.wholeUserProfile = {};
-      this.userInfo = {};
-      this.claims = {};
-      this.userInfo = {};
-    },
-  },
-});
 
+
+  actions: {
+
+    async getCurrentUser(uid) {
+      console.log("current user function started")
+      const functionUrl = `https://us-central1-regent-ems-fbdb.cloudfunctions.net/getUserByUid?uid=${uid}`;
+
+      if (!uid) {
+        console.error("No user id provided");
+        return;
+      }
+    
+      try {
+        const response = await fetch(functionUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          console.log("🚀 ~ getUserInfoByID ~ data:", data)
+    
+          if (data.success) {
+            this.setUser(data.data)
+          } else {
+            console.error("Error:", data.error);
+          }
+        } else {
+          console.error("Error:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    },
+
+    setUser(data){
+      console.log("about to set this as user", data)
+      localStorage.setItem('userDetails', JSON.stringify(data));
+        this.user = data;
+    },
+
+
+    logout(){
+      this.setUser(null)
+      localStorage.removeItem('userDetails');
+    }
+  },
+});  

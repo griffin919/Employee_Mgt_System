@@ -142,7 +142,6 @@
 import { ref, computed } from 'vue';
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
-const emsStore = useEmsStore();
 const { showClosableModal, hideModal } = useModal();
 
 const closeModal = () => {

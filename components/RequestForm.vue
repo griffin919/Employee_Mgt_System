@@ -84,7 +84,6 @@ import validator from "validator";
 
 const firebase = useFirebase();
 const authStore = useAuthStore();
-const emsStore = useEmsStore();
 const { showClosableModal, hideModal } = useModal();
 
 const modalStore = useModalStore();
