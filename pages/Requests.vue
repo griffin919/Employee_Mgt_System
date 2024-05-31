@@ -3,7 +3,7 @@
     id="requestFormModal"
     data-modal-target="requestFormModal"
     aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full overflow-hidden md:inset-0"
   >
     <div
       class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
@@ -12,6 +12,86 @@
       <RequestForm />
     </div>
   </div>
+
+      <!-- Manage Request Modal -->
+    <div
+      id="manageRequestModal"
+      data-modal-target="UpdateUserRole"
+      aria-hidden="true"
+       class="fixed top-0 left-0 right-0 z-50 hidden w-full overflow-hidden md:inset-0"
+  >
+    <div
+      class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+    >
+      <div>
+          <i
+            @click="closeModalGen('manageRequestModal')"
+            class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+          ></i>
+        </div>
+    <div class="flex items-center mb-6" v-if="userInfo">
+      <img
+      v-if="userInfo.userProfile"
+        :src="
+          userInfo.userProfile.photoURL
+        "
+        alt="Profile Picture"
+        class="w-16 h-16 rounded-full mr-4"
+      />
+      <div v-if="userInfo.userData">
+        <h3 class="text-lg font-semibold">
+          {{ userInfo.userData.fname || "" }} {{ userInfo.userData.lname }}
+        </h3>
+        <p class="text-gray-600">{{ userInfo.userData.department }}</p>
+      </div>
+
+      <div class="ml-auto">
+        <p
+          
+          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded mr-[4rem]"
+        >
+          {{selectedRequest.status}}
+        </p>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-6 mb-6">
+      <div>
+        <label class="block text-gray-700 font-semibold mb-2"
+          >Leave From:</label
+        >
+        <input
+          type="date"
+          v-model="selectedRequest.startDate"
+          disabled
+          value="11th June, 2023"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700 font-semibold mb-2">To: </label>
+        <input
+          type="date"
+          disabled
+          v-model="selectedRequest.endDate"
+          value="11th June, 2024"
+          class="w-full border border-gray-300 rounded-md px-3 py-2"
+        />
+      </div>
+    </div>
+    <textarea
+      type="text"
+      id="chat"
+      style="resize: none"
+      disabled
+      v-model="selectedRequest.reason"
+      rows="4"
+      class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+      placeholder="Your reason..."
+    ></textarea>
+      </div>
+    </div>
+
+
 
   <div class="bg-white relative overflow-x-auto shadow-md rounded-lg p-2">
     <div
@@ -42,6 +122,7 @@
             <th scope="col" class="px-6 py-3">Start</th>
             <th scope="col" class="px-6 py-3">End</th>
             <th scope="col" class="px-6 py-3">Status</th>
+            <th scope="col" class="px-6 py-3"></th>
           </tr>
         </thead>
         <tbody>
@@ -55,9 +136,7 @@
               scope="row"
               class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap"
             >
-              <div class="text-base font-semibold">
                 {{ req.requestType }}
-              </div>
             </td>
 
             <td class="px-6 py-1">{{ req.startDate }}</td>
@@ -80,46 +159,7 @@
       </table>
     </div>
 
-    <!-- Manage Request Modal -->
-    <div
-      id="manageRequestModal"
-      data-modal-target="UpdateUserRole"
-      aria-hidden="true"
-      class="fixed top-0 left-0 right-0 z-50 hidden overflow-hidden md:inset-0"
-    >
-      <div
-        class="bg-white p-4 w-2/6 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
-      >
-        <div>
-          <i
-            @click="closeModalGen('manageRequestModal')"
-            class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
-          ></i>
-        </div>
-        <div>
-          <select
-          v-if="selectedRequest"
-            v-model="selectedRequest.status" 
-            class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            id="grid-state"
-          >
-            <option value="pending">Pending</option>
-            <option value="accepted">Accept</option>
-            <option value="rejected">Reject</option>
-            <option value="cancelled">Cancel</option>
-          </select>
-        </div>
-        <div class="flex justify-end mt-3">
-          <button
-            @click="updateRequestStatus('manageRequestModal')"
-            class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
-            type="button"
-          >
-            Update
-          </button>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 <script setup>
@@ -150,8 +190,8 @@ definePageMeta({
   layout: "userlayout",
 });
 
-
-
+const authStore = useAuthStore();
+const userInfo = authStore.getUser;
 // Update request status
 const updateRequestStatus = async (id) => {
   if (!selectedRequest.value) return;
@@ -178,12 +218,9 @@ const updateRequestStatus = async (id) => {
 
 // get logged in user's requests
 const getUserRequests = async () => {
-  const user1 = firebase.auth.currentUser;
-  if (!user1) {
-    return;
-  }
-  const uid = user1.uid;
-  console.log("🚀 ~ getUserRequests ~ user1:", user1.uid);
+
+  const uid = userInfo.userProfile.uid;
+  console.log("🚀 ~ getUserRequests ~ user1:", uid);
 
   const requestsRef = firebase.dbref(firebase.db, "requests/" + uid);
   return new Promise((resolve, reject) => {

@@ -70,6 +70,7 @@ const loginUser = async () => {
 
         if (authStore.user) {
             firestore.getUserClaims();
+            navigateTo('/timesheets');
         };
     } catch (error) {
         console.error(error);

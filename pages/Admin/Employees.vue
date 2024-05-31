@@ -55,8 +55,9 @@
         <tbody>
           <tr
             class="bg-white border-b hover:bg-gray-50"
-            v-for="(employee, index) in employees"
+            v-for="(employee, index) in emsStore.employees"
             :key="employee.userRecord.uid"
+            v-if="emsStore.employees"
           >
             <td class="px-6 py-1">
               <!-- <img class="w-[2rem] h-[2rem] rounded-full" src="../../assets/images/generic_userimg.jpg" alt="Profile Image"> -->
@@ -110,15 +111,18 @@
 import { useFormatDate } from "@/composables/useFormatDate";
 import useModal from "@/composables/useModal";
 import useFirebase from "@/composables/useFirebase";
+import { useEmsStore } from "@/stores/emsStore";
 import { onMounted, ref, nextTick } from "vue";
 import useAuth from "@/composables/useAuth";
 
 const authComp = useAuth();
 
+const emsStore = useEmsStore();
+
 const { hideModal, showModal, showClosableModal } = useModal();
 const { formatDate } = useFormatDate();
 const firebase = useFirebase();
-const employees = ref([]);
+const employees = emsStore.employees;
 const personalAttendance = ref([]);
 const roleValue = ref("");
 // const filteredEmployees = ref(employees.value);
@@ -138,28 +142,29 @@ onMounted(() => {
 const logit = () => {
   // authComp.fetchAllUsers();
   firebase.getUsers();
+  console.log("Employees2:", emsStore.employees);
   // console.log("Users:", users);
 };
 
 const fetchUsers = async () => {
-  const users = firebase.getUsers();
+  try {
+    const users = firebase.getUsers();
+    console.log(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+  }
 };
 
 useHead({
-  title: "Timesheets",
+  title: "Employees",
   meta: [{ name: "description", content: "Employer hub" }],
 });
 
 definePageMeta({
-  // middleware: ["unauthemp"],
+  middleware: ["unauthadmin"],
   layout: "companyems",
 });
 
-// const filterEmployees = (e) => {
-//   filteredEmployees.value = employees.value.filter((employee) =>
-//     employee.name.toLowerCase().includes(e.target.value.toLowerCase())
-//   );
-// };
 
 const updateAccountStatus = (userid) => {
   const value = accountStatusValue.value[userid];
@@ -199,59 +204,37 @@ const updateUserAccessRole = (userid) => {
   authComp.updateUserAccessRole(userid, "role", value);
 };
 
-// const updateAccountStatus = (userid) => {
-//   const value = accountStatusValue.value[userid];
+const showUserInfoModal = async (employee) => {
+  console.log(employee.userRecord.uid)
+  const functionUrl = `https://us-central1-regent-ems-fbdb.cloudfunctions.net/getUserByUid?uid=${employee.userRecord.uid}`;
 
-//   console.log("updateAccountStatus:", value);
-
-//   if (!value || !userid) {
-//     alert("Please fill in all fields");
-//     return;
-//   }
-
-//   // validate
-//   if (!["accepted", "pending", "rejected"].includes(value)) {
-//     alert("Invalid account status value provided");
-//     return;
-//   }
-
-//   firebase.updateUserRole(userid, "accountStatus", value);
-// };
-
-// const updateUserRole = (userid) => {
-//   const value = userRoleValue.value[userid];
-//   console.log("🚀 ~ updateUserRole ~ value:", value)
-
-//   console.log("updateUserRole:", value);
-
-//   if (!value || !userid) {
-//     alert("Please fill in all fields");
-//     return;
-//   }
-
-//   // validate
-//   if (!["user", "admin"].includes(value)) {
-//     alert("Invalid user role value provided");
-//     return;
-//   }
-
-//   firebase.updateUserRole(userid, "role", value);
-// };
-const showUserInfoModal = (employee) => {
-  selectedEmployee.value = employee;
-  if (!selectedEmployee.value) {
-    alert("Please select an employee to manage");
-    return;
-  }
+      try {
+        const response = await fetch(functionUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          
+    
+          if (data.success) {
+  
+  selectedEmployee.value = data.data;
+  console.log("🚀 ~ getUserInfoByID ~ data:", selectedEmployee.value)
   showModal("userInfoModal");
+          } else {
+            console.error("Error:", data.error);
+          }
+        } else {
+          console.error("Error:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
 
-  // Re-render the child component after selectedEmployee is updated
-  // nextTick(() => {
-  //   // Trigger a re-render by modifying a reactive data property
-  //   console.log("🚀 ~ showUserInfoModal ~ selectedEmployee:", selectedEmployee.value);
-
-  //   selectedEmployee.value = { ...selectedEmployee.value };
-  // });
 };
 
 const closeModal = () => {
@@ -267,6 +250,17 @@ const showModalGen = (id) => {
 const closeModalGen = (id) => {
   // Initialize useModal composable
   hideModal(id);
+};
+
+const filterEmployees = (event) => {
+  const searchTerm = event.target.value.toLowerCase();
+  const filteredEmployees = emsStore.employees.filter((employee) => {
+    const fullName = `${employee.userRecord.displayName}`.toLowerCase();
+    return fullName.includes(searchTerm);
+  });
+
+  // Update the emsStore with the filtered employees
+  emsStore.setEmployees(filteredEmployees);
 };
 
 import { useModalStore } from "@/stores/modalStore.js";

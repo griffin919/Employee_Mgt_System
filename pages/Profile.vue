@@ -6,158 +6,360 @@
         <h4 class="text-lg font-bold"> Profile Management</h4>
       <div class="flex items-center mb-6">
         <div>
-          <h2 class="text-xl font-semibold">{{ employee.fname }} {{ employee.lname }}</h2>
-          <p class="text-gray-600">{{ employee.employee }}</p>
+          <!-- <h2 class="text-xl font-semibold">{{ employee.fname }} {{ employee.lname }}</h2>
+          <p class="text-gray-600">{{ employee.employee }}</p> -->
         </div>
       </div>
       <div class="grid grid-cols-2 gap-6">
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">First Name</label>
-          <input
-            type="text"
-            v-model="employee.fname"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Last Name</label>
-          <input
-            type="text"
-            v-model="employee.lname"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Phone Number</label>
-          <input
-            type="text"
-            v-model="employee.phoneNumber"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Email Address</label>
-          <input
-            type="email"
-            v-model="employee.email"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Address</label>
-          <input
-            type="text"
-            v-model="employee.address"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">Region</label>
-          <input
-            type="text"
-            v-model="employee.region"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">ID Type</label>
-          <input
-            type="text"
-            v-model="employee.idType"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-        <div>
-          <label class="block text-gray-700 font-semibold mb-2">ID Number</label>
-          <input
-            type="text"
-            v-model="employee.idNumber"
-            class="w-full border border-gray-300 rounded-md px-3 py-2"
-          />
-        </div>
-      </div>
-      <div class="flex items-center justify-between mt-6">
-        <div>
+        <!-- Step 2: Update Account Info -->
+        <div v-if="step === 2">
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="firstName"
+              >First Name</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="firstName"
+              type="text"
+              placeholder="John"
+              v-model="userProfile.fname"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="lastName"
+              >Last Name</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="lastName"
+              type="text"
+              placeholder="Doe"
+              v-model="userProfile.lname"
+            />
+          </div>
 
-          <button
-            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-            @click="updateUserInfo"
-          >
-            Request Update
-          </button>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="address"
+              >Phone Number</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="address"
+              type="text"
+              placeholder=""
+              v-model="userProfile.phoneNumber"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="gender"
+              >Gender</label
+            >
+            <select
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="gender"
+              v-model="userProfile.gender"
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="flex justify-between">
+            
+            <div class="flex justify-between">
+              <button
+                class="px-4 py-2 mx-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                type="button"
+                @click="step = 1"
+              >
+                Back
+              </button>
+              <button
+                class="px-4 py-2 text-sm font-semibold text-white bg-gray-500 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                type="button"
+                @click="step = 3"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: Employment Information -->
+        <div v-else-if="step === 3">
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="department"
+              >Staff ID</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department"
+              type="text"
+              placeholder=""
+              v-model="employmentInfo.staffid"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="department"
+              >Job Title</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department"
+              type="text"
+              placeholder=""
+              v-model="employmentInfo.jobTitle"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="department"
+              >Department</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="department"
+              type="text"
+              placeholder=""
+              v-model="employmentInfo.department"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="dateOfBirth"
+              >Date of Birth</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="dateOfBirth"
+              type="date"
+              v-model="userProfile.dateOfBirth"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block mb-2 text-sm font-medium text-gray-700"
+              for="dateOfBirth"
+              >Hire Date</label
+            >
+            <input
+              class="w-full px-3 py-2 leading-tight text-gray-700 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="dateOfBirth"
+              type="date"
+              v-model="employmentInfo.hireDate"
+            />
+          </div>
+
+          <div class="flex justify-between">
+            <button
+              class="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              type="button"
+              @click="step = 2"
+            >
+              Back
+            </button>
+            <button
+              class="px-4 py-2 text-sm font-semibold text-white bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+              type="button"
+              @click="saveAdditionalUserData"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
+
     </div>
     </div>
 </template>
 <script setup>
+import { ref } from "vue";
+import useModal from "@/composables/useModal";
+import useFirebase from "@/composables/useFirebase";
+import { useAuthStore } from "@/stores/authStore";
+import useAuth from "@/composables/useAuth";
+import validate from "validate.js";
+import validator from "validator";
 
-useHead({
-  title: "Profile",
-  meta: [{ name: "description", content: "Employer hub" }],
-});
+const authStore = useAuthStore();
+const userAuth = useAuth();
+const firebase = useFirebase();
+
+const { showModal, hideModal } = useModal();
 
 definePageMeta({
-  // middleware: ["unauthemp"],
+  middleware: ["unauthuser"],
   layout: "userlayout",
 });
 
-import { ref, computed } from 'vue';
-import useModal from "@/composables/useModal";
-import useFirebase from "@/composables/useFirebase";
+const step = ref(2); // Current step of the form
 
-const firestore = useFirebase();
-const confirmDelete = ref(false);
-
-const employee = ref({
-  username: '',
-  email: '',
-  imageUrl: '',
-  fname: '',
-  lname: '',
-  employee: '',
-  phoneNumber: '',
-  staffid: '',
-  address: '',
-  region: '',
-  idNumber: '',
-  idType: '',
-  isActive: true,
+const userProfile = ref({
+  email: "",
+  password: "",
+  phoneNumber: "",
+  photoURL: "",
+  fname: "",
+  lname: "",
+  gender: "",
+  dateOfBirth: "",
 });
 
-const activateAccount = () => {
-  employee.value.isActive = true;
-};
+const employmentInfo = ref({
+  staffid: "",
+  jobTitle: "",
+  department: "",
+  hireDate: "",
+});
 
-const deactivateAccount = () => {
-  employee.value.isActive = false;
-};
-
-const deleteEmployee = () => {
-  // Delete employee from the database
-  // ...
-  confirmDelete.value = false;
-};
-
-import { useModalStore } from "@/stores/modalStore.js";
-const modalStore = useModalStore();
-
-const updateUserInfo = () => {
-  
-  let info = "Confirm profile update";
-    modalStore.changeDialog(info);
-  let func = {};
-  // IF USER SELECTS YES CONTINUE FUNCTION
-  func.yesfunc = async function () {
-     try {
-    firestore.addCustomInfoToUserProfile(employee.value);
-    // Show success message
-  } catch (error) {
-    console.error(error);
-    // Show error message
+// Lets begin by creating a user account
+const createUserAccount = () => {
+  const { email, password } = userProfile.value;
+  if (email === "" || password === "") {
+    alert("Please enter email and password");
+    return;
   }
+
+  return firebase
+    .createUserWithEmailAndPassword(firebase.auth, email, password)
+    .then((userCredential) => {
+      // lets get the user data and store it in local storage
+
+      // alert("User signed up successfully");
+      checkUserLoggedIn(2);
+      // Signed up
+    })
+    .catch((error) => {
+      const errorMessage = error.message;
+      alert(errorMessage);
+      // ... Other error handling code
+    });
+};
+
+// now that we have created a user account, lets check if the user is logged in
+// firebase automatically logs in the user after creating an account
+// so we can get the user's data from the auth object
+const loggedInUser = ref(null);
+
+const checkUserLoggedIn = async (stepto) => {
+  const user = firebase.auth.currentUser;
+  if (user) {
+    //  getUserInfoByID  calls a firebase cloud function to get
+    // all available user profile data from the firebase auth and realtime database
+    // sets the user data in the local storage as "user"(wanted to name it overlord 😂)
+    await userAuth.getUserInfoByID(user.uid);
+    // move to the next step
+    step.value = stepto;
+  } else {
+    // No user is signed in.
+    alert("Create an account with your email and password to continue");
+  }
+};
+
+// Now lets update the user profile on the firebase auth,
+// we'll update the additional data in realtime database comes next
+const UpdateUserInfo = () => {
+  const { phoneNumber, fname, lname } = userProfile.value;
+
+  if (!firebase.auth.currentUser) {
+    alert("User not signed in");
+    return;
+  }
+
+  const updatedProfileData = {
+    displayName: `${fname} ${lname}`.trim(),
+    phoneNumber: phoneNumber ? phoneNumber.toString() : null, // Convert phoneNumber to string or set to null
   };
 
-  modalStore.OpenYesOrNOClick(func);
+  firebase
+    .updateProfile(firebase.auth.currentUser, updatedProfileData)
+    .then((response) => {
+      console.log("🚀 ~ updateProfile ~ response:", response);
+      alert("Profile updated successfully");
+    })
+    .catch((error) => {
+      console.error("UpdateProfile ~ error", error);
+      alert("An error occurred while updating the profile.");
+    });
+};
+
+// Now lets update the users additional data in the realtime database
+// firebase auth allows only predefined valuse i.e username, email, photoURL, phoneNumber, and displayName
+function saveAdditionalUserData() {
+  UpdateUserInfo()
+  const user = firebase.auth.currentUser;
+  if (!user) return; // Exit if there's no authenticated user
+
+  const userData = {
+    fname: userProfile.value.fname,
+    lname: userProfile.value.lname,
+    gender: userProfile.value.gender,
+    dateOfBirth: userProfile.value.dateOfBirth,
+    staffid: employmentInfo.value.staffid,
+    jobTitle: employmentInfo.value.jobTitle,
+    department: employmentInfo.value.department,
+    hireDate: employmentInfo.value.hireDate,
+  };
+
+  // Validate the required fields
+  const requiredFields = [
+    "fname",
+    "lname",
+    "gender",
+    "staffid",
+    "jobTitle",
+    "department",
+    "hireDate",
+    "dateOfBirth",
+  ];
+  const missingFields = requiredFields.filter((field) => !userData[field]);
+
+  if (missingFields.length > 0) {
+    const missingFieldsMessage = `Please enter the following fields: ${missingFields.join(
+      ", "
+    )}`;
+    alert(missingFieldsMessage);
+    return;
+  }
+
+  // Sanitize the data
+  const sanitizedData = {};
+  for (const [key, value] of Object.entries(userData)) {
+    sanitizedData[key] = validator.escape(value);
+  }
+
+  // Update the user data in Firebase
+  firebase
+    .update(firebase.dbref(firebase.db, `users/${user.uid}`), {
+      ...sanitizedData,
+    })
+    .then(() => {
+      alert("User profile updated successfully");
+    })
+    .catch((error) => {
+      console.error("Error updating user profile:", error);
+      alert("An error occurred");
+    });
+}
+
+const closeModal = () => {
+  hideModal("createAccountModal");
+  step.value = 1;
 };
 </script>

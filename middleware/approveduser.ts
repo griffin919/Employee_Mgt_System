@@ -14,8 +14,8 @@ if(!!userProfile){
   if (userRole === 'user') {
     
     return await navigateTo('/timesheets');
-  }  else if (userRole === 'employer') {
-    return await navigateTo('/employer/dashboard');
+  }  else if (userRole === 'admin') {
+    return await navigateTo('/admin/timesheets');
   }
 
 }

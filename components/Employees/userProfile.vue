@@ -1,11 +1,9 @@
 <template>
-  <div class="flex flex-wrap justify-between">
+  <div class="flex flex-wrap justify-between"  v-if="selectedEmployee">
     <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-full flex">
       <div class="flex items-center mb-4 w-1/2">
-        <!-- :src="getProfilePicture(selectedEmployee.userRecord)" -->
         <img
-          v-if="selectedEmployee && selectedEmployee.userData"
-          :src="selectedEmployee.userRecord.photoURL"
+          :src="selectedEmployee.userProfile.photoURL"
           alt="Profile Picture"
           class="w-28 h-28 rounded-full mr-4"
         />
@@ -14,27 +12,16 @@
           <h2 class="text-lg font-semibold">Employee profile</h2>
           <p class="text-gray-600">
             Name:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{
-                selectedEmployee.userData
-                  ? `${selectedEmployee.userData?.fname || ""} ${
-                      selectedEmployee.userData?.lname || ""
-                    }`
-                  : ""
-              }}
-            </span>
+            {{
+              selectedEmployee.userProfile.displayName
+            }}
           </p>
           <p class="text-gray-600">
             Mobile:
-            <span v-if="selectedEmployee && selectedEmployee.userRecord">
-              {{ selectedEmployee.phoneNumber || "" }}
-            </span>
           </p>
           <span>
             Email:
-            <span v-if="selectedEmployee && selectedEmployee.userRecord">
-              {{ selectedEmployee.userRecord.email || "" }}
-            </span>
+            {{ selectedEmployee.userProfile.email  }}
           </span>
         </div>
       </div>
@@ -42,15 +29,11 @@
         <div>
           <p class="text-gray-600">
             Gender:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData?.gender || "" }}
-            </span>
+            {{ selectedEmployee.userData.gender }}
           </p>
           <p class="text-gray-600">
             Date of Birth:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData.dateOfBirth || "" }}
-            </span>
+            {{ selectedEmployee.userData.dateOfBirth  }}
           </p>
         </div>
       </div>
@@ -59,29 +42,18 @@
       <div class="bg-white rounded-lg shadow-md p-6 mb-6 w-1/2 m-1">
         <h2 class="text-lg font-semibold mb-4">Emploment Profile</h2>
         <div class="text-gray-600 mb-4">
-          <p class="text-gray-600">
-            Hire Date:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData.hireDate || "" }}
-            </span>
-          </p>
+          
           <p class="text-gray-600">
             Staff ID:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData.staffid || "" }}
-            </span>
+            {{ selectedEmployee.userData.staffid || "" }}
           </p>
           <p class="text-gray-600">
             Department:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData.department || "" }}
-            </span>
+            {{ selectedEmployee.userData.department || "" }}
           </p>
           <p class="text-gray-600">
             Job Title:
-            <span v-if="selectedEmployee && selectedEmployee.userData">
-              {{ selectedEmployee.userData.jobTitle || "" }}
-            </span>
+            {{ selectedEmployee.userData.jobTitle || "" }}
           </p>
         </div>
         <div class="flex items-center mb-4"></div>
@@ -92,11 +64,8 @@
           <div class="text-2xl mr-4">🔓</div>
           <div>
             <h3 class="text-base font-semibold">Account Role</h3>
-            <p
-              class="text-gray-600"
-              v-if="selectedEmployee && selectedEmployee.userRecord"
-            >
-              Role: {{ selectedEmployee.userRecord.customClaims.role }}
+            <p class="text-gray-600">
+              Role: {{ selectedEmployee.userProfile.customClaims.role }}
             </p>
           </div>
           <button
@@ -110,12 +79,9 @@
           <div class="text-2xl mr-4">🔓</div>
           <div>
             <h3 class="text-base font-semibold">Account Status</h3>
-            <p
-              class="text-gray-600"
-              v-if="selectedEmployee && selectedEmployee.userRecord"
-            >
+            <p class="text-gray-600">
               Status:
-              {{ selectedEmployee.userRecord.customClaims.accountStatus }}
+              {{ selectedEmployee.userProfile.customClaims.accountStatus }}
             </p>
           </div>
           <button
@@ -138,23 +104,20 @@
       <div
         class="flex align-center p-4 w-2/6 bg-gray-500 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
       >
-       
         <div class="w-1/3 mr-5">
-          <span class="" v-if="selectedEmployee && selectedEmployee.userRecord">
-            <select
-            v-model="selectedEmployee.userRecord.customClaims.role"
-              class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="grid-state"
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-              <option value="root">Root</option>
-            </select>
-          </span>
+          <select
+            v-model="selectedEmployee.userProfile.customClaims.role"
+            class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-state"
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+            <option value="root">Root</option>
+          </select>
         </div>
         <div class="flex justify-end w-1/3">
           <button
-            @click="updateUserAccessRole(selectedEmployee.userRecord.uid, selectedEmployee.userRecord.customClaims.role)"
+            @click="updateUserAccessRole(selectedEmployee.userProfile.uid, selectedEmployee.userProfile.customClaims.role)"
             class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
             type="button"
           >
@@ -180,23 +143,20 @@
       <div
         class="flex align-center p-4 w-2/6 bg-gray-500 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
       >
-       
         <div class="w-1/3 mr-5">
-          <span class="" v-if="selectedEmployee && selectedEmployee.userRecord">
-            <select
-            v-model="selectedEmployee.userRecord.customClaims.accountStatus"
-              class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              id="grid-state"
-            >
-              <option value="pending">Pending</option>
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </span>
+          <select
+            v-model="selectedEmployee.userProfile.customClaims.accountStatus"
+            class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            id="grid-state"
+          >
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
         </div>
         <div class="flex justify-end w-1/3">
           <button
-            @click="updateAccountStatus(selectedEmployee.userRecord.uid, selectedEmployee.userRecord.customClaims.accountStatus)"
+            @click="updateAccountStatus(selectedEmployee.userProfile.uid, selectedEmployee.userProfile.customClaims.accountStatus)"
             class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
             type="button"
           >
@@ -213,7 +173,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import useModal from "@/composables/useModal";
 import { defineProps, onMounted, computed, ref } from "vue";
@@ -223,14 +182,12 @@ import { toRefs } from "vue";
 
 const { hideModal, showModal } = useModal();
 
-const props = defineProps({
+const {selectedEmployee} = defineProps({
   selectedEmployee: {
     type: Object,
     required: true,
   },
 });
-
-const { selectedEmployee } = toRefs(props);
 
 const { closeModal } = useModal();
 const authComp = useAuth();
@@ -245,7 +202,7 @@ const closeModalGen = (id) => {
   hideModal(id);
 };
 
-const userRecordExists = selectedEmployee && selectedEmployee.userRecord;
+const userRecordExists = selectedEmployee && selectedEmployee.userProfile;
 const userDataExists = selectedEmployee && selectedEmployee.value;
 
 const logit = () => {
@@ -269,6 +226,7 @@ const updateUserAccessRole = (userid, value) => {
   }
 
   authComp.updateUserAccessRole(userid, "role", value);
+  hideModal('UpdateUserRole')
 };
 
 
@@ -288,6 +246,7 @@ const updateAccountStatus = (userid, value) => {
   }
 
   authComp.updateUserAccessRole(userid, "accountStatus", value);
+  hideModal('updateAccountStatusModal')
 };
 
 

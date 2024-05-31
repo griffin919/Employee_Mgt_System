@@ -87,6 +87,8 @@ export default function useFirebase() {
         // Signed in
         const usr = auth.currentUser;
         authStore.getCurrentUser(usr.uid);
+        
+        location.reload();
         alert("User signed in successfully");
       })
       .catch((error) => {
@@ -99,7 +101,7 @@ export default function useFirebase() {
   const signOutUser = async () => {
     auth.signOut().then(() => {
       // Sign-out successful.
-      authStore.logout(usr.uid);
+      authStore.logout();
       console.log("User signed out");
     });
   };

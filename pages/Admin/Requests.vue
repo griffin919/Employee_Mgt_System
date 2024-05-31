@@ -14,36 +14,44 @@
     </div>
   </div>
 
-  <!-- request info modal -->
+  <!-- Manage Request Modal -->
   <div
-    id="requestInfoModal"
-    data-modal-target="requestInfoModal"
+    id="manageRequestModal"
+    data-modal-target="UpdateUserRole"
     aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full overflow-hidden md:inset-0"
   >
     <div
       class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
     >
-      <!-- TODO: UPDATE TO  -->
-      <div
-        class="relative bg-white rounded-lg max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
-      >
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold mb-4">Leave Request</h2>
-          <i
-            @click="closeModal('requestInfoModal')"
-            class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
-          ></i>
-        </div>
-        <div class="flex items-center mb-6">
+      <div>
+        <i
+          @click="closeModalGen('manageRequestModal')"
+          class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+        ></i>
+      </div>
+      <div>
+        <div class="flex items-center mb-6" v-if="selectUser">
           <img
-            src="https://via.placeholder.com/80"
+            v-if="selectUser.userProfile"
+            :src="selectUser.userProfile.photoURL"
             alt="Profile Picture"
             class="w-16 h-16 rounded-full mr-4"
           />
-          <div>
-            <h3 class="text-lg font-semibold">Raymond Oppong Asare</h3>
-            <p class="text-gray-600">Accountant</p>
+          <div v-if="selectUser.userData">
+            <h3 class="text-lg font-semibold">
+              {{ selectUser.userData.fname || "" }}
+              {{ selectUser.userData.lname }}
+            </h3>
+            <p class="text-gray-600">{{ selectUser.userData.department }}</p>
+          </div>
+
+          <div class="ml-auto">
+            <p
+              class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded mr-[4rem]"
+            >
+              {{ selectedRequest.status }}
+            </p>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-6 mb-6">
@@ -52,47 +60,52 @@
               >Leave From:</label
             >
             <input
-              type="text"
+              type="date"
+              v-model="selectedRequest.startDate"
+              disabled
               value="11th June, 2023"
               class="w-full border border-gray-300 rounded-md px-3 py-2"
-              disabled
             />
           </div>
           <div>
             <label class="block text-gray-700 font-semibold mb-2">To: </label>
             <input
-              type="text"
+              type="date"
+              disabled
+              v-model="selectedRequest.endDate"
               value="11th June, 2024"
               class="w-full border border-gray-300 rounded-md px-3 py-2"
-              disabled
             />
           </div>
         </div>
-        <p class="text-gray-700 mb-6">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has survived not only
-          five centuries, but also the leap into electronic typesetting,
-          remaining essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages, and
-          more recently with desktop publishing software like Aldus PageMaker
-          including versions of Lorem Ipsum.
-        </p>
-        <div class="flex justify-end">
+        <textarea
+          type="text"
+          id="chat"
+          style="resize: none"
+          disabled
+          v-model="selectedRequest.reason"
+          rows="4"
+          class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+          placeholder="Your reason..."
+        ></textarea>
+        <div class="flex">
           <button
-            class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded mr-4"
+          @click="updateRequestStatus('Reject')"
+            class="w-6/12 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded mr-4"
           >
             Deny Request
           </button>
           <button
-            class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
+          @click="updateRequestStatus('Approve')"
+            class="w-6/12 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded"
           >
             Approve Request
           </button>
         </div>
-      </div>
+
+       
     </div>
+  </div>
   </div>
 
   <div class="bg-white mt-4 relative overflow-x-auto shadow-md rounded-lg p-2">
@@ -114,122 +127,74 @@
         >
         <a
           href="#"
-          @click="filterRequests('Requested')"
+          @click="filterRequests('pending')"
           class="px-3 py-1 w-20 text-center rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white focus:bg-white"
           >New</a
         >
         <a
           href="#"
-          @click="filterRequests('Approved')"
+          @click="filterRequests('accepted')"
           class="px-3 py-1 w-20 text-center rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white focus:bg-white"
           >Approved</a
         >
         <a
           href="#"
-          @click="filterRequests('Denied')"
+          @click="filterRequests('rejected')"
           class="px-3 py-1 w-20 text-center rounded-md text-sm font-medium hover:bg-gray-700 hover:text-white focus:outline-none focus:bg-white"
           >Denied</a
         >
       </div>
-      <!-- <div class="w-2/12">
-        <button
-          @click="showCreateRequest"
-          class="bg-blue-500 border py-1 border-blue-500 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-30svh overflow-y-auto"
-          type="button"
+    </div>
+
+      <div class="overflow-y-auto h-[74svh]">
+    <table class="w-full text-sm text-left text-gray-500">
+      <thead class="sticky top-0 bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3">Date</th>
+          <th scope="col" class="px-6 py-3">Type</th>
+          <th scope="col" class="px-6 py-3">Start</th>
+          <th scope="col" class="px-6 py-3">End</th>
+          <th scope="col" class="px-6 py-3">Status</th>
+          <th scope="col" class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="bg-white border-b hover:bg-gray-50"
+          v-for="(req, index) in filteredRequests"
+          :key="index"
         >
-          Create Request
-        </button> -->
-      </div>
-    </div>
-    <div class="overflow-y-auto h-[74svh]">
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="sticky top-0 bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3">Date</th>
-            <th scope="col" class="px-6 py-3">Employee</th>
-            <th scope="col" class="px-6 py-3">Type</th>
-            <th scope="col" class="px-6 py-3">Start</th>
-            <th scope="col" class="px-6 py-3">End</th>
-            <th scope="col" class="px-6 py-3">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="bg-white border-b hover:bg-gray-50"
-            v-for="(req, index) in userRequests"
-            :key="index"
+          <td class="px-6 py-1">{{ formatDate(req.dateCreated) }}</td>
+          <td
+            scope="row"
+            class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap"
           >
-            <td class="px-6 py-1">{{ formatDate(req.dateCreated) }}</td>
-            <td class="px-6 py-1">{{}}</td>
+            <div class="text-base font-semibold">
+              {{ req.requestType }}
+            </div>
+          </td>
 
-            <td
-              scope="row"
-              class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap"
+          <td class="px-6 py-1">{{ req.startDate }}</td>
+          <td class="px-6 py-1">
+            {{ formatDate(req.endDate) }}
+          </td>
+          <td class="px-6 py-1">
+            {{ req.status }}
+          </td>
+          <td>
+            <button
+              @click="showModalGen('manageRequestModal', req)"
+              class="bg-white hover:bg-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
             >
-              <div class="text-base font-semibold">
-                {{ req.requestType }}
-              </div>
-            </td>
+              View
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
 
-            <td class="px-6 py-1">{{ req.startDate }}</td>
-            <td class="px-6 py-1">
-              {{ formatDate(req.endDate) }}
-            </td>
-            <td class="px-6 py-1">
-              {{ req.status }}
-            </td>
-            <td>
-              <button
-                @click="showModalGen('manageRequestModal', req)"
-                class="bg-white hover:bg-gray-200 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
-              >
-                View
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Manage Request Modal -->
-    <div
-      id="manageRequestModal"
-      data-modal-target="UpdateUserRole"
-      aria-hidden="true"
-      class="fixed top-0 left-0 right-0 z-50 hidden overflow-hidden md:inset-0"
-    >
-      <div
-        class="bg-white p-4 w-2/6 rounded-2xl relative max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
-      >
-        <div>
-          <i
-            @click="closeModalGen('manageRequestModal')"
-            class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
-          ></i>
-        </div>
-        <div>
-          <select
-            v-model="selectedRequest.status"
-            class="block appearance-none bg-gray-200 w-100 border border-gray-200 text-gray-700 py-1 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            id="grid-state"
-          >
-            <option value="pending">Pending</option>
-            <option value="Approved">Approve</option>
-            <option value="rejected">Reject</option>
-            <option value="cancalled">cancal</option>
-          </select>
-        </div>
-        <div class="flex justify-end mt-3">
-          <button
-            @click="updateRequestStatus('manageRequestModal')"
-            class="bg-gray-200 border py-1 px-6 text-sm rounded-lg block"
-            type="button"
-          >
-            Update
-          </button>
-        </div>
-      </div>
-    </div>
 </template>
 <script setup>
 import { useFormatDate } from "@/composables/useFormatDate";
@@ -254,17 +219,80 @@ useHead({
 });
 
 definePageMeta({
-  // middleware: ["unauthemp"],
+  middleware: ["unauthadmin"],
   layout: "companyems",
 });
 
-const refresh = () => {
-  // employerListStore.loadAllListings();
+const modalStore = useModalStore();
+
+const updateRequestStatus = (n) => {
+  console.log(n)
+  hideModal('manageRequestModal');
+   let info = "Confirm update?";
+  modalStore.changeDialog(info);
+  let func = {};
+  // IF USER SELECTS YES CONTINUE FUNCTION
+  func.yesfunc = async function () {
+    try {
+   
+  const user = firebase.auth.currentUser;
+  const req = selectedRequest.value;
+
+  const updates = {};
+  updates[`requests/${req.userId}/${req.requestid}/status`] = n;
+
+  firebase
+    .update(firebase.dbref(firebase.db), updates)
+    .then(() => {
+      // User role updated successfully
+      alert("Request status updated successfully");
+      getUserRequests();
+    })
+    .catch((error) => {
+      console.error("Error updating request status", error);
+      alert("An error occurred");
+    });
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  modalStore.OpenYesOrNOClick(func);
 };
 
-const showModalGen = (id, req) => {
-  selectedRequest.value = req;
-  showModal(id);
+const selectUser = ref({});
+
+const showModalGen = async (id, req) => {
+  console.log(req);
+
+  console.log(req.userId);
+  const functionUrl = `https://us-central1-regent-ems-fbdb.cloudfunctions.net/getUserByUid?uid=${req.userId}`;
+
+  try {
+    const response = await fetch(functionUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data.success) {
+        selectedRequest.value = req;
+        selectUser.value = data.data;
+
+        showModal(id);
+      } else {
+        console.error("Error:", data.error);
+      }
+    } else {
+      console.error("Error:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
 };
 
 const closeModalGen = (id) => {
@@ -272,27 +300,24 @@ const closeModalGen = (id) => {
   selectedRequest.value = {};
 };
 
-const updateRequestStatus = async (id) => {
-  const user = firebase.auth.currentUser;
-  const req = selectedRequest.value;
-  await firebase.updateRequestStatus(user.uid, req.requestid, req.status);
-  closeModalGen(id);
-  getUserRequests();
-};
+
 
 const getUserRequests = async () => {
   const user = firebase.auth.currentUser;
   const userReqs = await firebase.getAllRequests();
 
-
-  userRequests.value = Object.entries(userReqs)
-  .flatMap(([userId, userRequests]) =>
-    Object.entries(userRequests)
-      .map(([requestId, request]) => ({
+  userRequests.value = Object.entries(userReqs).flatMap(
+    ([userId, userRequests]) =>
+      Object.entries(userRequests).map(([requestId, request]) => ({
         ...request,
-        userId
+        userId,
+        requestid: requestId, // Add this line to include the requestId
       }))
   );
+
+  // Initialize filteredRequests with all fetched requests
+  filteredRequests.value = userRequests.value;
+
   console.log("🚀 ~ getUserRequests ~ userRequests:", userRequests);
 };
 
@@ -307,17 +332,22 @@ const showRequestInfoModal = () => {
 const closeModal = () => {
   hideModal("requestInfoModal");
 };
+ const filteredRequests = ref([]);
+
+    const filterRequests = (status) => {
+      if (status === 'All') {
+        filteredRequests.value = userRequests.value;
+      } else {
+        filteredRequests.value = userRequests.value.filter(
+          (request) => request.status === status
+        );
+      }
+    };
 
 
-const filteredRequests = ref(userRequests);
-
-const filterRequests = (status) => {
-  if (status === "All") {
-    filteredRequests.value = requests;
-    return;
-  }
-  filteredRequests.value = requests.filter(
-    (request) => request.status === status
-  );
-};
+    onMounted(() => {
+      // Initialize filteredRequests to show all requests by default
+      filteredRequests.value = userRequests.value;
+      filterRequests('All')
+    });
 </script>

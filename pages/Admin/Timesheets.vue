@@ -1,25 +1,53 @@
 <template>
   <div class="bg-white relative overflow-x-auto shadow-md rounded-lg p-2">
-    <div
-      class="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 bg-white"
-    >
-      <div class="flex py-2 items-center text-base font-semibold ml-4">
-        <p>Attendance</p>
-        <button @click="getUserAttendance" class="flex items-baseline">
-          <i class="ml-4 text-lg bx bx-revision"></i>
-        </button>
+
+
+          <div
+        class="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 bg-white"
+      >
+        <div class="flex py-2 items-center text-base font-semibold ml-4">
+          <p>Timesheets</p>
+          <button @click="getUserAttendance" class="flex items-baseline">
+            <i class="ml-4 text-lg bx bx-revision"></i>
+          </button>
+        </div>
+        
+        <div class=" p-2 flex ">
+          
+          <label for="startDate" class="mr-2">Start Date:</label>
+          <input
+            id="startDate"
+            v-model="startDate"
+            type="date"
+            class="border bg-gray-200 border-gray-300 rounded px-2 py-1 mr-4"
+             @change="getUserAttendance"
+          />
+          <label for="endDate" class="mr-2">End Date:</label>
+          <input
+            id="endDate"
+            v-model="endDate"
+             @change="getUserAttendance"
+            type="date"
+            class="border bg-gray-200 border-gray-300 mr-4 rounded px-2 py-1"
+          />
+          
+          <button
+              class="bg-green-500 border py-2 border-green-500  text-white text-sm rounded-lg block px-2"
+              type="button"
+              @click="printTable"
+            >
+              Print Report
+            </button></div>
       </div>
-      <div class="w-4/12 p-2"></div>
-    </div>
     <div class="overflow-y-auto h-[74svh]">
-      <table class="w-full text-sm text-left text-gray-500">
+      <table id="timesheetTable" class="w-full text-sm text-left text-gray-500">
         <thead class="sticky  border-b top-0 bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-3">Date</th>
-            <th scope="col" class="px-6 py-3"> user</th>
-            <th scope="col" class="px-6 py-3"> Clock In</th>
-            <th scope="col" class="px-6 py-3"> Clock Out</th>
-            <th scope="col" class="px-6 py-3"> Hour Worked</th>
+            <th scope="col" class="px-6 py-3">Employee</th>
+            <th scope="col" class="px-6 py-3">Clock In</th>
+            <th scope="col" class="px-6 py-3">Clock Out</th>
+            <th scope="col" class="px-6 py-3">Hour Worked</th>
           </tr>
         </thead>
         <tbody>
@@ -29,11 +57,11 @@
             :key="log.userid"
           >
            
-            <td class="px-6 py-1">{{formatDate(log.date) }}</td>
-            <td class="px-6 py-1">{{ log.user }}</td>
-            <td class="px-6 py-1">{{ log.clockIn }}</td>
-            <td class="px-6 py-1">{{ log.clockOut }}</td>
-            <td class="px-6 py-1">{{ log.hoursWorked }}</td>
+            <td class="px-6 py-3">{{formatDate(log.date) }}</td>
+            <td class="px-6 py-3">{{ log.user }}</td>
+            <td class="px-6 py-3">{{ log.clockIn }}</td>
+            <td class="px-6 py-3">{{ log.clockOut }}</td>
+            <td class="px-6 py-3">{{ log.hoursWorked }}</td>
           </tr>
         </tbody>
       </table>
@@ -49,16 +77,36 @@ onMounted(() => {
   getUserAttendance();
 });
 
+
+const printTable = () => {
+  const table = document.getElementById('timesheetTable').outerHTML;
+  const printWindow = window.open('', '', 'height=600,width=800');
+  printWindow.document.write('<html><head><title>Timesheet</title>');
+  printWindow.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {padding: 8px; text-align: left; border-bottom: 1px solid #ddd;} th {background-color: #f2f2f2;}</style>');
+  printWindow.document.write('</head><body>');
+  printWindow.document.write(table);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+  printWindow.onload = function() {
+    printWindow.print();
+    printWindow.close();
+  };
+};
+
+const startDate = ref('');
+const endDate = ref('');
+
+
 const firebase = useFirebase();
 const { formatDate } = useFormatDate();
 const attendanceLog = ref([]);
 
 //get all user attendance and process it
 const getUserAttendance = async () => {
-  
   try {
     let data = await firebase.getAllAttendance();
     const personalAttendance = [];
+
     // Process logs for each user
     for (const userId in data) {
       const logsForUser = data[userId];
@@ -94,11 +142,22 @@ const getUserAttendance = async () => {
         }
       }
     }
-    attendanceLog.value = personalAttendance;
-    console.log(
-      "🚀 ~ getUserAttendance ~ attendanceLog.value:",
-      attendanceLog.value
-    );
+
+    // Filter personalAttendance based on startDate and endDate
+    const filteredAttendance = personalAttendance.filter(log => {
+      const logDate = new Date(log.date);
+      if (startDate.value && endDate.value) {
+        return logDate >= new Date(startDate.value) && logDate <= new Date(endDate.value);
+      } else if (startDate.value) {
+        return logDate >= new Date(startDate.value);
+      } else if (endDate.value) {
+        return logDate <= new Date(endDate.value);
+      }
+      return true; // Include all logs if no date filter is applied
+    });
+
+    attendanceLog.value = filteredAttendance;
+    console.log("🚀 ~ getUserAttendance ~ attendanceLog.value:", attendanceLog.value);
   } catch (error) {
     console.log(error);
   }
@@ -111,7 +170,7 @@ useHead({
 });
 
 definePageMeta({
-  // middleware: ["unauthemp"],
+  middleware: ["unauthadmin"],
   layout: "companyems",
 });
 

@@ -87,17 +87,7 @@ const authStore = useAuthStore();
 const { showClosableModal, hideModal } = useModal();
 
 const modalStore = useModalStore();
-const userInfo = ref(null);
-
-onMounted(() => {
-  // get user data from local storage
-  // check if data exists in local storage
-  let usr = JSON.parse(localStorage.getItem("user"));
-  console.log("🚀 ~ onMounted ~ usr:", usr)
-  if (usr) {
-    userInfo.value = usr;
-  }
-});
+const userInfo = authStore.getUser;
 
 const requestBucket = ref({
   startDate: "",
@@ -125,7 +115,7 @@ const submitRequest = () => {
       createRequest(requestBucket.value);
       console.log("🚀 ~ requestBucket:", requestBucket);
     } catch (error) {
-      throw error; // Rethrow the error to handle it elsewhere if needed
+      throw error; 
     }
   };
 
@@ -180,7 +170,7 @@ const createRequest = (data) => {
     update(
       firebase.dbref(
         firebase.db,
-        "requests/" + user.uid + "/" + sanitizedData.requestid
+        "requests/" +userInfo.userProfile.uid + "/" + sanitizedData.requestid
       ),
       sanitizedData
     )

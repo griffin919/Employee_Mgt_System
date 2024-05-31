@@ -1,5 +1,6 @@
 import { ref } from "vue"; // Import ref for reactive variables
 import { Dropdown } from "flowbite";
+import { useEmsStore } from "@/stores/emsStore";
 import {useAuthStore} from "@/stores/authStore";
 
 // import { useCookie } from "@vueuse/core";
@@ -39,6 +40,7 @@ export default function useAuth() {
   
   };
 
+  const emsStore = useEmsStore();
   const authStore = useAuthStore();
 
   // fetch all users from using firebase admin
@@ -56,6 +58,7 @@ export default function useAuth() {
       if (response.ok) {
         const data = await response.json();
         console.log("🚀 ~ fetchAllUsers ~ data:", data.userRecord);
+        emsStore.setUsers(data.userRecord);
         return data;
       } else {
         console.error("Error:", response);
