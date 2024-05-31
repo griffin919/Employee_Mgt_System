@@ -43,6 +43,12 @@ const firestore = useFirebase();
 const authStore = useAuthStore();
 import { onMounted } from 'vue';
 
+
+definePageMeta({
+  middleware: ["approveduser"],
+  layout: "blank",
+});
+
 const showRequestInfoModal = () => {
     showModal('createAccountModal');
 };

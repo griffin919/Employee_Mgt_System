@@ -4,7 +4,7 @@
       <div class="flex items-center mb-4 w-1/2">
         <!-- :src="getProfilePicture(selectedEmployee.userRecord)" -->
         <img
-          v-if="selectedEmployee && selectedEmployee.userRecord"
+          v-if="selectedEmployee && selectedEmployee.userData"
           :src="selectedEmployee.userRecord.photoURL"
           alt="Profile Picture"
           class="w-28 h-28 rounded-full mr-4"
