@@ -16,7 +16,27 @@
         ></button>
       </div>
       <ul class="nav-list">
-
+        <li>
+          <nuxt-link to="/root/Employees">
+            <i class="bx bx-group"></i>
+            <span class="links_name">Employees</span>
+          </nuxt-link>
+          <span class="tooltip">Employees</span>
+        </li>
+        <li>
+          <nuxt-link to="/root/newemployee">
+            <i class="bx bx-user-plus"></i>
+            <span class="links_name">New Employee</span>
+          </nuxt-link>
+          <span class="tooltip">New Employee</span>
+        </li>
+        <li>
+          <nuxt-link to="/root/profile">
+            <i class="bx bx-user-circle"></i>
+            <span class="links_name">Profile</span>
+          </nuxt-link>
+          <span class="tooltip">Profile</span>
+        </li>
 
         <li class="profile" v-if="userInfo.userProfile">
           <div class="profile-details">
@@ -57,22 +77,29 @@
             </p>
           </div>
         </div>
-
-    </div>
-     
-          <div class="flex justify-center">
-  <div class="grid place-items-center">
-    <div>
-      <img
-        src="../assets/RUCST_logo.jpg"
-        class="icon w-[5rem] h-[5rem] rounded-full m-4"
-        alt="ciraq logo"
-      />
-    </div>
-    <h1 class="text-4xl">ACCOUNT APPROVAL PENDING PLEASE WAIT</h1>
-    <button class="w-6/12 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded m-4" @click="signOut">Log out<i class="bx bx-log-out"></i></button>
-  </div>
-</div>
+        <div>
+          <i class="bx bx-camera" @click="showModalGen('updateProfileImgModal')"></i>
+        </div>
+      </div>
+      
+<!-- Update Profile Image modal -->
+        <div
+          id="updateProfileImgModal"
+          data-modal-target="userInfoModal"
+          aria-hidden="true"
+          class="fixed top-0 left-0 right-0 z-50 hidden w-fulloverflow-hidden md:inset-0"
+        >
+          <div
+            class="bg-white p-4 rounded-2xl relative w-full max-w-4xl max-h-full overflow-y-auto scrollbar-hidden"
+          >
+            <i
+              @click="closeModalGen('updateProfileImgModal')"
+              class="absolute bx bx-x-circle top-2 right-0 px-4 py-2 text-2xl text-gray-400 hover:text-red-600"
+            ></i>
+            <EmployeesUpdateProfileImg />
+          </div>
+        </div>
+      <slot />
     </section>
   </div>
 </template>
@@ -87,11 +114,6 @@ import useAuth from "@/composables/useAuth";
 
 const userAuth = useAuth();
 const { hideModal, showModal, showClosableModal } = useModal();
-
-definePageMeta({
-  middleware: ["unapproveduser"],
-});
-
 
 const firebase = useFirebase();
 
@@ -410,4 +432,3 @@ body {
   scrollbar-track-color: #f1f1f1;
 }
 </style>
-

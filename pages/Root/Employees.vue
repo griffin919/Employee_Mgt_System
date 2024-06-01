@@ -159,8 +159,8 @@ useHead({
 });
 
 definePageMeta({
-  middleware: ["unauthadmin"],
-  layout: "companyems",
+  middleware: ["unauthroot"],
+  layout: "root",
 });
 
 

@@ -88,7 +88,7 @@ export default function useFirebase() {
         const usr = auth.currentUser;
         authStore.getCurrentUser(usr.uid);
         
-        location.reload();
+        
         alert("User signed in successfully");
       })
       .catch((error) => {

@@ -60,6 +60,7 @@ export const useAuthStore = defineStore("authStore", {
       console.log("about to set this as user", data)
       localStorage.setItem('userDetails', JSON.stringify(data));
         this.user = data;
+        location.reload();
     },
 
 

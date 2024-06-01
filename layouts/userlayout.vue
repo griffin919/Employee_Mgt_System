@@ -140,7 +140,6 @@ const showModalGen = (id) => {
   showModal(id);
 };
 
-
 const signOut = () => {
   let info = "Confirm signout?";
   modalStore.changeDialog(info);
@@ -154,11 +153,8 @@ const signOut = () => {
       throw error; 
     }
   };
-
   modalStore.OpenYesOrNOClick(func);
 };
-
-
 
 const closeModalGen = (id) => {
   hideModal(id);

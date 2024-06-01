@@ -8,7 +8,7 @@
           class="icon w-10 h-10 rounded-full mr-4"
           alt="ciraq logo"
         />
-        <div class="logo_name">Regent Admin</div>
+        <div class="logo_name">Regent HR</div>
         <button
           class="bx bx-menu mr-2"
           id="btn"
@@ -36,13 +36,6 @@
             <span class="links_name">Requests</span>
           </nuxt-link>
           <span class="tooltip">Requests</span>
-        </li>
-        <li>
-          <nuxt-link to="/admin/newemployee">
-            <i class="bx bx-user-plus"></i>
-            <span class="links_name">New Employee</span>
-          </nuxt-link>
-          <span class="tooltip">New Employee</span>
         </li>
         <li>
           <nuxt-link to="/admin/profile">
