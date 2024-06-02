@@ -79,18 +79,17 @@ onMounted(() => {
 
 
 const printTable = () => {
-  const table = document.getElementById('timesheetTable').outerHTML;
-  const printWindow = window.open('', '', 'height=600,width=800');
-  printWindow.document.write('<html><head><title>Timesheet</title>');
-  printWindow.document.write('<style>table {width: 100%; border-collapse: collapse;} th, td {padding: 8px; text-align: left; border-bottom: 1px solid #ddd;} th {background-color: #f2f2f2;}</style>');
-  printWindow.document.write('</head><body>');
-  printWindow.document.write(table);
-  printWindow.document.write('</body></html>');
-  printWindow.document.close();
-  printWindow.onload = function() {
-    printWindow.print();
-    printWindow.close();
-  };
+ const table = document.getElementById("timesheetTable");
+  const newWindow = window.open('', '_blank');
+
+  newWindow.document.write('<html><head><title>Timesheet Table</title>');
+  newWindow.document.write('<style>table {border-collapse: collapse;} table, th, td {border: 1px solid black;}</style></head><body>');
+  newWindow.document.write(table.outerHTML);
+  newWindow.document.write('</body></html>');
+
+  newWindow.document.close();
+  newWindow.print();
+
 };
 
 const startDate = ref('');

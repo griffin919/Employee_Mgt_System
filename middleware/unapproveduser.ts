@@ -6,17 +6,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   
   console.log(userProfile)
 
-  
-  // Check if the userProfile object exists and the role is "user"
-if(!!userProfile){
-  const accountStatus = userProfile.userProfile.customClaims.accountStatus;
-  console.log("userrole", accountStatus)
-  if (accountStatus === 'pending') {
-    
-    return await navigateTo('/pending');
-  }  else if (accountStatus === 'accepted') {
-    return await navigateTo('timesheets');
-  }
+if(!userProfile || userProfile.userProfile.customClaims.accountStatus !="pending"){
+  return await navigateTo('/');
 
 }
+
 });
