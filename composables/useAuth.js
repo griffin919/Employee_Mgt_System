@@ -103,11 +103,41 @@ const getUserInfoByID = async (uid) => {
     console.error("Error:", error);
   }
 };
+  
+// fetch user by id using firebase admin
+const deleteUserById = async (uid) => {
+  const functionUrl = `https://us-central1-regent-ems-fbdb.cloudfunctions.net/deleteUserById?uid=${uid}`;
+
+  if (!uid) {
+    console.error("No user id provided");
+    return;
+  }
+
+  try {
+    const response = await fetch(functionUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("🚀 ~ deleteUserById ~ data:", data)
+
+    } else {
+      console.error("Error:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+};
 
 
   return {
     updateUserAccessRole,
     fetchAllUsers,
     getUserInfoByID,
+    deleteUserById,
   };
 }

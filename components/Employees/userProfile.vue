@@ -95,7 +95,7 @@
     </div>
 
     <div class="flex w-full bg-white rounded-lg" >
-      <button @click="deleteAccount" class=" bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded mr-4">Delete Account</button>
+      <button @click="deleteAccount(selectedEmployee.userProfile.uid)" class=" bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded mr-4">Delete Account</button>
     </div>
 
     <!-- Update User Role Modal -->
@@ -199,16 +199,21 @@ const firebase = useFirebase();
 
 const modalStore = useModalStore();
 
-const deleteAccount = () => {
-    hideModal('userInfoModal')
+const deleteAccount = (uid) => {
+  if(!uid) return;
+
+  hideModal('userInfoModal')
   let info = "Confirm delete, this action is irreversible?";
   modalStore.changeDialog(info);
   let func = {};
   // IF USER SELECTS YES CONTINUE FUNCTION
   func.yesfunc = async function () {
     try {
-      // employerAuth.logout()
-      await firebase.signOutUser();
+      await authComp.deleteUserById(uid);
+
+      // reload page after delete
+      window.location.reload();
+   
     } catch (error) {
       throw error; 
     }
@@ -269,6 +274,8 @@ const updateAccountStatus = (userid, value) => {
   authComp.updateUserAccessRole(userid, "accountStatus", value);
   hideModal('updateAccountStatusModal')
 };
+
+
 
 
 </script>
